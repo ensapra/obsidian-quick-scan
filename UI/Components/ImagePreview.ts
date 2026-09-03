@@ -55,6 +55,8 @@ export class ImagePreview extends Component {
 	// for cropping points
 	private croppingPointsVisible: boolean;
 	private cropPoints: CropPoint[];
+	private cropHandleLayer: HTMLElement;
+	private cropHandles: HTMLElement[];
 	private draggedPointIndex: number;
 
 	// for image filters
@@ -119,6 +121,11 @@ export class ImagePreview extends Component {
 		this.ctx = ctx;
 
 		this.parent.appendChild(this.canvas);
+		this.cropHandleLayer = this.parent.createEl("div", { cls: "crop-handle-layer" });
+		this.cropHandles = Array.from({ length: 4 }, () =>
+			this.cropHandleLayer.createEl("div", { cls: "crop-handle" }),
+		);
+		this.cropHandleLayer.style.display = "none";
 		this.toRotateDegree = 0;
 		this.croppingPointsVisible = false;
 		this.cropPoints = [];
@@ -144,15 +151,17 @@ export class ImagePreview extends Component {
 	}
 
 	private setupInputEvents() {
+		const interactionSurface = this.parent;
+
 		// Mouse events (desktop)
-		this.registerDomEvent(this.canvas, "mousedown", this.onMouseDown.bind(this));
-		this.registerDomEvent(this.canvas, "mousemove", this.onMouseMove.bind(this));
-		this.registerDomEvent(this.canvas, "mouseup", this.onMouseUp.bind(this));
+		this.registerDomEvent(interactionSurface, "mousedown", this.onMouseDown.bind(this));
+		this.registerDomEvent(interactionSurface, "mousemove", this.onMouseMove.bind(this));
+		this.registerDomEvent(interactionSurface, "mouseup", this.onMouseUp.bind(this));
 
 		// Touch events (mobile)
-		this.registerDomEvent(this.canvas, "touchstart", this.onTouchStart.bind(this), { passive: false });
-		this.registerDomEvent(this.canvas, "touchmove", this.onTouchMove.bind(this), { passive: false });
-		this.registerDomEvent(this.canvas, "touchend", this.onTouchEnd.bind(this));
+		this.registerDomEvent(interactionSurface, "touchstart", this.onTouchStart.bind(this), { passive: false });
+		this.registerDomEvent(interactionSurface, "touchmove", this.onTouchMove.bind(this), { passive: false });
+		this.registerDomEvent(interactionSurface, "touchend", this.onTouchEnd.bind(this));
 	}
 
 	/**
@@ -496,10 +505,31 @@ export class ImagePreview extends Component {
 
 		this.renderCroppingPointsOnCanvas();
 		this.croppingPointsVisible = true;
+		this.updateCropHandles();
 	}
 
 	private renderCroppingPointsOnCanvas() {
 		renderCropPoints(this.ctx, this.cropPoints, this.cropPointStyle);
+		this.updateCropHandles();
+	}
+
+	private updateCropHandles() {
+		if (!this.cropHandleLayer || !this.cropHandles) return;
+
+		if (!this.croppingPointsVisible || this.cropPoints.length !== 4) {
+			this.cropHandleLayer.style.display = "none";
+			return;
+		}
+
+		const canvasRect = this.canvas.getBoundingClientRect();
+		const parentRect = this.parent.getBoundingClientRect();
+		this.cropHandleLayer.style.display = "block";
+
+		this.cropPoints.forEach((point, index) => {
+			const handle = this.cropHandles[index];
+			handle.style.left = `${canvasRect.left - parentRect.left + point.x}px`;
+			handle.style.top = `${canvasRect.top - parentRect.top + point.y}px`;
+		});
 	}
 
 	private redrawCroppingPoints() {
@@ -532,6 +562,7 @@ export class ImagePreview extends Component {
 
 		this.cropPoints = [];
 		this.croppingPointsVisible = false;
+		this.updateCropHandles();
 	}
 
 	public toggleCroppingPoints(show: boolean, detectedPoints?: CropPoint[]): OperationResult {
@@ -633,7 +664,8 @@ export class ImagePreview extends Component {
 
 			// Hide crop points
 			this.cropPoints = [];
-		this.croppingPointsVisible = false;
+			this.croppingPointsVisible = false;
+			this.updateCropHandles();
 		}).catch((error) => {
 			console.error("Error creating image from crop:", error);
 		});

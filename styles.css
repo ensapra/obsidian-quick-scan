@@ -26,22 +26,46 @@ If your plugin does not need CSS, delete this file.
 .scanner-modal-container {
 	display: flex;
 	width: 100%;
-	flex: 1;
+	flex: 1.5; /* Increased for better interaction */
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	padding: 1rem;
+	padding: 2rem;
 	min-height: 0;
 	overflow: hidden;
+	position: relative;
 }
 
 .scanner-modal-container canvas {
-	border: 5px solid #43334C;
 	max-width: 100%;
 	max-height: 100%;
 	object-fit: contain;
 	transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
+}
+
+.crop-handle-layer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.crop-handle {
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	box-sizing: border-box;
+	transform: translate(-50%, -50%);
+	border: 2px solid #000000;
+	border-radius: 50%;
+	background: var(--interactive-accent);
+	box-shadow: 0 0 0 5px #ffffff;
+	cursor: grab;
+	pointer-events: auto;
+}
+
+.crop-handle:active {
+	cursor: grabbing;
 }
 
 /* Button Wrapper - Horizontal Layout */
@@ -105,9 +129,9 @@ If your plugin does not need CSS, delete this file.
 	}
 	
 	.scanner-modal-container {
-		padding: 0.5rem; /* Reduce padding to maximize canvas space (was 1rem) */
+		padding: 1.5rem;
 	}
-	
+
 	/* Reduce button padding on mobile to save vertical space */
 	.button-wrapper,
 	.confirm-button-wrapper {
@@ -122,7 +146,7 @@ If your plugin does not need CSS, delete this file.
 	}
 	
 	.scanner-modal-container {
-		padding: 0.25rem; /* Minimal padding */
+		padding: 1rem;
 	}
 	
 	.button-wrapper,
@@ -144,7 +168,7 @@ If your plugin does not need CSS, delete this file.
 }
 
 .filter-panel-wrapper > div {
-	display: grid;
+		padding: 20px; /* Increased padding for better touch targets */
 	grid-template-columns: 1fr 1fr;
 	gap: 16px 24px;
 	align-items: start;

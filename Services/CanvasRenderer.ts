@@ -197,9 +197,7 @@ export function renderCropPoints(
 	ctx.lineWidth = style.lineWidth;
 	ctx.stroke();
 
-	// Draw the crop points (all at full opacity)
 	points.forEach((point) => {
-		// Draw outer circle (white)
 		ctx.beginPath();
 		ctx.arc(point.x, point.y, style.outerRadius, 0, Math.PI * 2);
 		ctx.fillStyle = style.outerColor;
@@ -208,7 +206,6 @@ export function renderCropPoints(
 		ctx.lineWidth = 2;
 		ctx.stroke();
 
-		// Draw inner circle (colored)
 		ctx.beginPath();
 		ctx.arc(point.x, point.y, style.innerRadius, 0, Math.PI * 2);
 		ctx.fillStyle = style.innerColor;
