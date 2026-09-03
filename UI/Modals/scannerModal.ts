@@ -37,6 +37,10 @@ export class ScannerModal extends Modal {
 		this.sourcePath = sourcePath;
 		this.setTitle("Scan your note");
 		this.modalEl.addClass("scanner-modal");
+		this.modalEl.style.setProperty(
+			"--scan-toolbar-icon-size",
+			`${plugin.settings.toolbarIconSize || 40}px`,
+		);
 
 		this.container = this.contentEl.createDiv("scanner-modal-container");
 		this.canvas = new ImagePreview(

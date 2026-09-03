@@ -138,6 +138,7 @@ Access plugin settings via **Settings → Scan Sketch**:
 
 - **Default Export Format**: Set default export file format (PNG, JPG, or SVG)
 - **Close Scanner After Export**: Toggle automatically closing the scanner modal upon successful export
+- **Toolbar Icon Size**: Adjust scanner toolbar icon size independently of Obsidian's interface zoom
 
 ## Optional: Enhanced Notebook Styling
 

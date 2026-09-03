@@ -13,6 +13,7 @@ If your plugin does not need CSS, delete this file.
 	height: 80vh;
 	max-width: 900px;
 	max-height: calc(100vh - 2rem);
+	--scan-toolbar-icon-size: 40px;
 }
 
 .scanner-modal .modal-content {
@@ -81,8 +82,8 @@ If your plugin does not need CSS, delete this file.
 
 /* Make icon buttons square */
 .button-wrapper button {
-	width: 48px;
-	height: 48px;
+	width: var(--scan-toolbar-icon-size);
+	height: var(--scan-toolbar-icon-size);
 	padding: 0;
 	display: flex;
 	align-items: center;
@@ -91,8 +92,8 @@ If your plugin does not need CSS, delete this file.
 }
 
 .button-wrapper button svg {
-	width: 24px;
-	height: 24px;
+	width: calc(var(--scan-toolbar-icon-size) * 0.5);
+	height: calc(var(--scan-toolbar-icon-size) * 0.5);
 }
 
 /* Confirmation Button Wrapper - Centered Layout */
@@ -107,8 +108,8 @@ If your plugin does not need CSS, delete this file.
 }
 
 .confirm-button-wrapper button {
-	width: 48px;
-	height: 48px;
+	width: var(--scan-toolbar-icon-size);
+	height: var(--scan-toolbar-icon-size);
 	padding: 0;
 	display: flex;
 	align-items: center;
@@ -117,8 +118,8 @@ If your plugin does not need CSS, delete this file.
 }
 
 .confirm-button-wrapper button svg {
-	width: 24px;
-	height: 24px;
+	width: calc(var(--scan-toolbar-icon-size) * 0.5);
+	height: calc(var(--scan-toolbar-icon-size) * 0.5);
 }
 
 /* Mobile Optimizations */

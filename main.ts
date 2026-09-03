@@ -5,11 +5,15 @@ import { ScannerModal } from "./UI/Modals/scannerModal";
 interface HandwrittenScannerSettings {
 	exportDefaultFormat: ExportFormat;
 	closeAfterExport: boolean;
+	toolbarIconSize: number;
 }
+
+const DEFAULT_TOOLBAR_ICON_SIZE = 40;
 
 const DEFAULT_SETTINGS: HandwrittenScannerSettings = {
 	exportDefaultFormat: "png",
 	closeAfterExport: true,
+	toolbarIconSize: DEFAULT_TOOLBAR_ICON_SIZE,
 };
 
 export default class HandWrittenPlugin extends Plugin {
@@ -81,6 +85,30 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
+
+		new Setting(containerEl)
+			.setName("Toolbar icon size")
+			.setDesc("Size of the scanner toolbar icons, independent of Obsidian's interface zoom")
+			.addSlider((slider) =>
+				slider
+					.setLimits(32, 72, 4)
+					.setValue(this.plugin.settings.toolbarIconSize)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.toolbarIconSize = value;
+						await this.plugin.saveSettings();
+					}),
+			)
+			.addButton((button) =>
+				button
+					.setButtonText("Reset")
+					.setTooltip("Reset toolbar icon size to 40px")
+					.onClick(async () => {
+						this.plugin.settings.toolbarIconSize = DEFAULT_TOOLBAR_ICON_SIZE;
+						await this.plugin.saveSettings();
+						this.display();
+					}),
+			);
 
 		new Setting(containerEl)
 			.setName("Default export format")
