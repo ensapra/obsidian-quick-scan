@@ -12,6 +12,7 @@ export class FilterControls {
 	private onFilterChange: (config: Partial<ImageFilterConfig>) => void;
 	private onResetFilters: () => void;
 	private checkImageLoaded: () => boolean;
+	private onToggleMode: () => void;
 
 	// Current filter values
 	private brightness: number;
@@ -30,12 +31,14 @@ export class FilterControls {
 		onFilterChange: (config: Partial<ImageFilterConfig>) => void,
 		onResetFilters: () => void,
 		checkImageLoaded: () => boolean,
+		onToggleMode: () => void,
 	) {
 		this.panelContainer = panelContainer;
 		this.gridContainer = this.panelContainer.createDiv();
 		this.onFilterChange = onFilterChange;
 		this.onResetFilters = onResetFilters;
 		this.checkImageLoaded = checkImageLoaded;
+		this.onToggleMode = onToggleMode;
 		this.isExpanded = false;
 
 		// Initialize filter values
@@ -62,7 +65,7 @@ export class FilterControls {
 		const btn = new ButtonComponent(buttonContainer)
 			.setIcon("sliders-horizontal")
 			.setTooltip("Edit image (filters)")
-			.onClick(() => this.togglePanel());
+			.onClick(() => this.onToggleMode());
 
 		return btn;
 	}
@@ -83,6 +86,15 @@ export class FilterControls {
 			this.panelContainer.show();
 		}
 		this.isExpanded = !this.isExpanded;
+	}
+
+	public closePanel() {
+		this.isExpanded = false;
+		this.panelContainer.hide();
+	}
+
+	public isPanelOpen(): boolean {
+		return this.isExpanded;
 	}
 
 	/**

@@ -107,6 +107,10 @@ export class BackgroundRemovalControls {
 		this.resetState();
 	}
 
+	public isRemovalModeOpen(): boolean {
+		return this.isExpanded;
+	}
+
 	/**
 	 * Reset state when entering/exiting mode
 	 */

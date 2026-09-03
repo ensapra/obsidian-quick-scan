@@ -131,6 +131,7 @@ export class ScannerModal extends Modal {
 			(config) => this.canvas.updateFilters(config),
 			() => this.canvas.resetFilters(),
 			() => this.canvas.isImageLoaded(),
+			() => this.toggleFilterMode(),
 		);
 		this.btnEdit = this.filterControls.createEditButton(this.buttonWrapper);
 
@@ -287,6 +288,16 @@ export class ScannerModal extends Modal {
 	}
 
 	private toggleBackgroundRemovalMode() {
+		if (this.bgRemovalControls.isRemovalModeOpen()) {
+			this.canvas.cancelBackgroundRemoval();
+			this.exitBackgroundRemovalMode();
+			return;
+		}
+
+		if (this.filterControls.isPanelOpen()) {
+			this.filterControls.closePanel();
+		}
+
 		const result = this.canvas.enterBackgroundRemovalMode(
 			(color) => this.bgRemovalControls.updateSampledColor(color)
 		);
@@ -299,9 +310,6 @@ export class ScannerModal extends Modal {
 		// Show BG removal panel
 		this.bgRemovalControls.enterRemovalMode();
 		this.bgRemovalPanelWrapper.show();
-
-		// Hide main buttons
-		this.buttonWrapper.hide();
 
 		new Notice(result.message);
 	}
@@ -353,6 +361,15 @@ export class ScannerModal extends Modal {
 		this.bgRemovalControls.exitRemovalMode();
 		this.bgRemovalPanelWrapper.hide();
 		this.buttonWrapper.show();
+	}
+
+	private toggleFilterMode() {
+		if (this.bgRemovalControls.isRemovalModeOpen()) {
+			this.canvas.cancelBackgroundRemoval();
+			this.exitBackgroundRemovalMode();
+		}
+
+		this.filterControls.togglePanel();
 	}
 
 	/**
