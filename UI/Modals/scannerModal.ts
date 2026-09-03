@@ -9,6 +9,7 @@ import type HandWrittenPlugin from "../../main";
 
 export class ScannerModal extends Modal {
 	private plugin: HandWrittenPlugin;
+	private sourcePath?: string;
 	private container: HTMLElement;
 	private buttonWrapper: HTMLElement;
 	private filterPanelWrapper: HTMLElement;
@@ -30,9 +31,10 @@ export class ScannerModal extends Modal {
 	private bgRemovalControls: BackgroundRemovalControls;
 	private exportControls: ExportControls;
 
-	constructor(app: App, plugin: HandWrittenPlugin) {
+	constructor(app: App, plugin: HandWrittenPlugin, sourcePath?: string) {
 		super(app);
 		this.plugin = plugin;
+		this.sourcePath = sourcePath;
 		this.setTitle("Scan your note");
 		this.modalEl.addClass("scanner-modal");
 
@@ -131,6 +133,7 @@ export class ScannerModal extends Modal {
 			this.plugin,
 			() => this.canvas.isImageLoaded(),
 			() => this.close(), // Close scanner modal after export
+			this.sourcePath,
 		);
 		this.btnExport = this.exportControls.createExportButton(this.buttonWrapper);
 

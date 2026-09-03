@@ -19,6 +19,7 @@ import { saveToVault } from "../../Services/VaultExport";
 export class ExportModal extends Modal {
 	private canvas: HTMLCanvasElement;
 	private plugin: HandWrittenPlugin;
+	private sourcePath?: string;
 	private selectedFormat: ExportFormat;
 	private filenameInput: TextComponent;
 	private extensionDisplay: HTMLElement;
@@ -32,10 +33,17 @@ export class ExportModal extends Modal {
 	private shouldInsertLink: boolean = true;
 	private onExportComplete?: () => void;
 
-	constructor(app: App, canvas: HTMLCanvasElement, plugin: HandWrittenPlugin, onExportComplete?: () => void) {
+	constructor(
+		app: App,
+		canvas: HTMLCanvasElement,
+		plugin: HandWrittenPlugin,
+		onExportComplete?: () => void,
+		sourcePath?: string,
+	) {
 		super(app);
 		this.canvas = canvas;
 		this.plugin = plugin;
+		this.sourcePath = sourcePath;
 		this.selectedFormat = plugin.settings.exportDefaultFormat;
 		this.onExportComplete = onExportComplete;
 	}
@@ -258,11 +266,11 @@ export class ExportModal extends Modal {
 					);
 				}
 
-				const activeFile = this.app.workspace.getActiveFile();
 				const folder = this.app.fileManager.getNewFileParent(
+					this.sourcePath ?? this.app.workspace.getActiveFile()?.path ?? "",
 					filenameWithExtension,
-					activeFile?.path ?? "",
 				);
+				const activeFile = this.app.workspace.getActiveFile();
 
 				// Save to the folder selected in Obsidian's attachment settings
 				const file = await saveToVault(

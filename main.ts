@@ -1,4 +1,4 @@
-import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, Plugin, PluginSettingTab, Setting, TFile } from "obsidian";
 import type { ExportFormat } from "./Services/ImageExport";
 
 interface HandwrittenScannerSettings {
@@ -17,28 +17,42 @@ export default class HandWrittenPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		this.addRibbonIcon("scan", "Scanner", async (_evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			// Lazy load ScannerModal only when needed
-			const { ScannerModal } = await import("./UI/Modals/scannerModal");
-			new ScannerModal(this.app, this).open();
-		});
-
-		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
 			id: "open-sketch-scanner",
 			name: "Open sketch scanner",
 			icon: "scan",
-			callback: async () => {
-				// Lazy load ScannerModal only when needed
-				const { ScannerModal } = await import("./UI/Modals/scannerModal");
-				new ScannerModal(this.app, this).open();
-			},
+			callback: () => void this.openScanner(),
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
+		this.registerEvent(this.app.workspace.on("file-menu", (menu, file) => {
+			if (!(file instanceof TFile)) return;
+
+			menu.addItem((item) =>
+				item
+					.setTitle("Scan note")
+					.setIcon("scan")
+					.onClick(() => void this.openScanner(file.path)),
+			);
+		}));
+
+		this.registerEvent(this.app.workspace.on("editor-menu", (menu, _editor, info) => {
+			const file = info.file;
+			if (!file) return;
+
+			menu.addItem((item) =>
+				item
+					.setTitle("Scan note")
+					.setIcon("scan")
+					.onClick(() => void this.openScanner(file.path)),
+			);
+		}));
+
 		this.addSettingTab(new HandwrittenScannerSettingTab(this.app, this));
+	}
+
+	private async openScanner(sourcePath?: string): Promise<void> {
+		const { ScannerModal } = await import("./UI/Modals/scannerModal");
+		new ScannerModal(this.app, this, sourcePath).open();
 	}
 
 	onunload() {}

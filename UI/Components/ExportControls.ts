@@ -13,6 +13,7 @@ export class ExportControls {
 	private plugin: HandWrittenPlugin;
 	private isImageLoaded: () => boolean;
 	private onExportComplete?: () => void;
+	private sourcePath?: string;
 
 	constructor(
 		app: App,
@@ -20,12 +21,14 @@ export class ExportControls {
 		plugin: HandWrittenPlugin,
 		isImageLoaded: () => boolean,
 		onExportComplete?: () => void,
+		sourcePath?: string,
 	) {
 		this.app = app;
 		this.getCanvas = getCanvas;
 		this.plugin = plugin;
 		this.isImageLoaded = isImageLoaded;
 		this.onExportComplete = onExportComplete;
+		this.sourcePath = sourcePath;
 	}
 
 	/**
@@ -48,6 +51,12 @@ export class ExportControls {
 		}
 
 		// Open export modal
-		new ExportModal(this.app, this.getCanvas(), this.plugin, this.onExportComplete).open();
+		new ExportModal(
+			this.app,
+			this.getCanvas(),
+			this.plugin,
+			this.onExportComplete,
+			this.sourcePath,
+		).open();
 	}
 }

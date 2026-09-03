@@ -98,8 +98,9 @@ BRAT will automatically keep the plugin updated with the latest releases.
 ### Basic Workflow
 
 1. **Open Scanner Modal**
-   - Click the scan icon in the ribbon (left sidebar)
-   - Or use Command Palette: "Open Scanner"
+   - Right-click a note and choose **Scan note**
+   - On mobile, open the note's editor menu above the keyboard and choose **Scan note**
+   - Or use Command Palette: "Open sketch scanner"
 
 2. **Upload Image**
    - Click "Upload" to select from files
