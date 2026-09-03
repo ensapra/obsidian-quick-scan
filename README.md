@@ -103,8 +103,8 @@ BRAT will automatically keep the plugin updated with the latest releases.
    - Or use Command Palette: "Open sketch scanner"
 
 2. **Upload Image**
-   - Click "Upload" to select from files
-   - Or click "Camera" to capture directly (if available)
+      - The camera or gallery picker opens automatically
+      - Use the image button to choose another image
 
 3. **Adjust & Process**
    - **Rotate**: Click rotation buttons to orient correctly

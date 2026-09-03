@@ -1,5 +1,6 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting, TFile } from "obsidian";
 import type { ExportFormat } from "./Services/ImageExport";
+import { ScannerModal } from "./UI/Modals/scannerModal";
 
 interface HandwrittenScannerSettings {
 	exportDefaultFormat: ExportFormat;
@@ -50,8 +51,7 @@ export default class HandWrittenPlugin extends Plugin {
 		this.addSettingTab(new HandwrittenScannerSettingTab(this.app, this));
 	}
 
-	private async openScanner(sourcePath?: string): Promise<void> {
-		const { ScannerModal } = await import("./UI/Modals/scannerModal");
+	private openScanner(sourcePath?: string): void {
 		new ScannerModal(this.app, this, sourcePath).open();
 	}
 

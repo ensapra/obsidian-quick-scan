@@ -71,11 +71,14 @@ export class ScannerModal extends Modal {
 		//btn setup
 		this.btnPhotoUpload = new ButtonComponent(this.buttonWrapper)
 			.setIcon("image")
-			.setTooltip("Upload image from gallery")
+			.setTooltip("Choose image from camera or gallery")
 			.setCta()
 			.onClick(() =>
 				uploadImageToCanvas(this.canvas.darawImage.bind(this.canvas)),
 			);
+
+		// Open the native camera/gallery picker as soon as the scanner is ready.
+		uploadImageToCanvas(this.canvas.darawImage.bind(this.canvas));
 
 		this.btnPhotoRotateCW = new ButtonComponent(this.buttonWrapper)
 			.setIcon("rotate-cw")
