@@ -86,7 +86,7 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 		return [
 			{
 				id: "exportFolders",
-				name: "Destination folders",
+				name: "Destination folders 34",
 				description: "Manage destination folders for saving scanned images.",
 			},
 			{
@@ -108,7 +108,7 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Destination folders")
+			.setName("Destination folders 34")
 			.setDesc(
 				"Manage destination folders for saving scanned images. In the export dialog, you can choose from these folders using a dropdown menu.",
 			);

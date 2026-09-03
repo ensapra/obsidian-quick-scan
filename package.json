@@ -6,7 +6,6 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"build-and-copy": "./build-and-copy.sh",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"test": "vitest run",
 		"test:ui": "vitest --ui",
@@ -28,8 +27,6 @@
 	"license": "OBSD",
 	"devDependencies": {
 		"@types/node": "^20.19.27",
-		"@typescript-eslint/eslint-plugin": "5.29.0",
-		"@typescript-eslint/parser": "5.29.0",
 		"@vitest/ui": "^4.0.16",
 		"esbuild": "^0.28.1",
 		"happy-dom": "^20.10.3",

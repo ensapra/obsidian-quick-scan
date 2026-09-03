@@ -220,7 +220,6 @@ obsidian-scan-sketch/
 ### Code Quality
 
 - **Testing**: 136 unit tests with >90% coverage
-- **Linting**: ESLint with TypeScript support
 - **Formatting**: EditorConfig (tabs, double quotes, LF)
 - **Type Safety**: Strict TypeScript configuration
 - **Documentation**: JSDoc comments for public APIs
