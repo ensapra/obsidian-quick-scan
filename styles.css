@@ -105,7 +105,6 @@ If your plugin does not need CSS, delete this file.
 		padding: 0.75rem; /* Reduced from 1rem */
 	}
 }
-
 /* Extra optimization for very small screens (phones in portrait) */
 @media (max-width: 480px) {
 	.scanner-modal {
@@ -516,113 +515,5 @@ If your plugin does not need CSS, delete this file.
 	.bg-removal-actions button {
 		padding: 12px 18px;
 		font-size: 14px;
-	}
-}
-
-/* Export Modal */
-.export-modal {
-	width: 450px;
-	max-width: 90vw;
-}
-
-.export-modal .modal-content {
-	padding: 20px;
-}
-
-/* Format Selector */
-.export-format-section {
-	margin: 15px 0;
-}
-
-.export-format-section h4 {
-	margin-bottom: 10px;
-	font-size: 0.9em;
-	font-weight: 600;
-	color: var(--text-muted);
-}
-
-.export-format-options {
-	display: flex;
-	gap: 20px;
-}
-
-.export-format-option {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	cursor: pointer;
-	user-select: none;
-}
-
-.export-format-option input[type="radio"] {
-	cursor: pointer;
-	margin: 0;
-}
-
-.export-format-option label {
-	cursor: pointer;
-	margin: 0;
-}
-
-/* Filename Input */
-.export-filename-section {
-	margin: 15px 0;
-}
-
-.export-filename-section h4 {
-	margin-bottom: 10px;
-	font-size: 0.9em;
-	font-weight: 600;
-	color: var(--text-muted);
-}
-
-.export-filename-wrapper {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.export-filename-input {
-	flex: 1;
-}
-
-.export-filename-extension {
-	color: var(--text-normal);
-	font-weight: 600;
-	font-size: 1em;
-	min-width: 40px;
-}
-
-/* Action Buttons */
-.export-buttons {
-	display: flex;
-	gap: 10px;
-	justify-content: flex-end;
-	margin-top: 20px;
-	padding-top: 15px;
-	border-top: 1px solid var(--background-modifier-border);
-}
-
-.export-buttons button {
-	min-width: 80px;
-}
-
-/* Mobile Responsive */
-@media (max-width: 600px) {
-	.export-modal {
-		width: 95vw;
-	}
-	
-	.export-format-options {
-		flex-direction: column;
-		gap: 12px;
-	}
-	
-	.export-buttons {
-		flex-direction: column-reverse;
-	}
-	
-	.export-buttons button {
-		width: 100%;
 	}
 }

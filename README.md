@@ -113,10 +113,9 @@ BRAT will automatically keep the plugin updated with the latest releases.
    - **Background Removal**: Click to sample background color, adjust tolerance
 
 4. **Export**
-   - Click "Export" button (download icon)
-   - Choose format (PNG/SVG)
-   - Enter filename or use auto-generated timestamp
-   - Click "Export" to save to vault
+   - Click the checkmark button to save the final image
+   - The configured format, automatic filename, and Obsidian attachment location are used
+   - The image is inserted into the note automatically
 
 ### Background Removal
 
@@ -202,7 +201,6 @@ obsidian-scan-sketch/
 │   │   ├── FilterControls.ts
 │   │   └── ImagePreview.ts
 │   └── Modals/
-│       ├── ExportModal.ts
 │       └── scannerModal.ts
 ├── test/                  # Vitest unit test suite (136 tests)
 └── styles.css            # Plugin CSS styling
