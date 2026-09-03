@@ -92,10 +92,10 @@ export class ExportControls {
 	}
 
 	private async insertLink(sourcePath: string, attachment: TFile): Promise<void> {
-		const markdownLink = this.app.fileManager.generateMarkdownLink(
+		const markdownLink = `!${this.app.fileManager.generateMarkdownLink(
 			attachment,
 			sourcePath,
-		);
+		)}`;
 		const activeFile = this.app.workspace.getActiveFile();
 		const editor = this.app.workspace.activeEditor?.editor;
 		if (activeFile?.path === sourcePath && editor) {
