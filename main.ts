@@ -24,14 +24,7 @@ export default class HandWrittenPlugin extends Plugin {
 
 		this.addCommand({
 			id: "open-sketch-scanner",
-			name: "Open sketch scanner",
-			icon: "scan",
-			callback: () => void this.openScanner(),
-		});
-
-		this.addCommand({
-			id: "quick-scan",
-			name: "Quick Scan: Scan your document",
+			name: "Scan your document",
 			icon: "scan",
 			callback: () => void this.openScanner(),
 		});
