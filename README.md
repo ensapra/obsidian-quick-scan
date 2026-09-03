@@ -1,351 +1,173 @@
-# Scan Sketch
+# Quick Scan
 
-A powerful Obsidian plugin for scanning, processing, and enhancing handwritten notes and documents. Transform photos of your handwritten notes into clean, processed images with automatic perspective correction, background removal, and advanced filtering.
+Quick Scan is a fork of [Showwaiyan/obsidian-scan-sketch](https://github.com/Showwaiyan/obsidian-scan-sketch), updated for Obsidian 1.13 and modified to be easier to work with, faster to use when adding scans, and more polished through multiple quality-of-life improvements.
 
-<a href="https://www.buymeacoffee.com/Showwaiyan" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
-## DEMO
-![Demo](./assets/demo.gif)
+It is an Obsidian plugin for turning photos of handwritten notes and documents into clean scans. The workflow is designed for both desktop and mobile, with a quick command that can be added directly to the mobile toolbar.
 
 ## Features
 
-### 📸 Image Upload & Processing
-- **Multiple Input Methods**: Upload from file picker or capture directly from camera
-- **Automatic Corner Detection**: One-click automatic page corner detection for physical notebook pages and documents
-- **Smart Perspective Correction**: Interactive four-corner crop handles with quadrilateral transform
-- **Rotation Controls**: Rotate images in 90-degree increments for proper orientation
-- **HiDPI Support**: Full support for high-resolution displays (Retina, 4K, etc.)
-
-### 🎨 Advanced Image Enhancement
-- **Background Removal**:
-  - Click-to-sample background color detection
-  - Adjustable tolerance slider (0-50)
-  - Real-time preview with checkerboard pattern for transparency
-  - Export with true transparent background (PNG)
-
-- **Image Filters**:
-  - Brightness adjustment (-100 to +100)
-  - Contrast enhancement (-100 to +100)
-  - Saturation control (-100 to +100)
-  - Black & White conversion
-   - Color inversion
-  - Real-time preview with 200ms debouncing
-
-### 💾 Export & Storage Options
-- **Multiple Export Formats**:
-  - PNG (with transparency support)
-  - JPG (compact image format)
-  - SVG (embedded vector wrapper with customizable stroke color)
-- **Flexible Storage & Workflows**:
-   - **Obsidian Attachment Settings**: Save scans using Obsidian's default attachment location
-  - **Direct Markdown Link Insertion**: Automatically insert `![[folder/image.png]]` embed link into active note at cursor position
-  - **Auto-Close Scanner**: Optionally auto-close scanner window after successful export
-  - Automatic timestamp-based filename generation
-  - Custom filename support with validation
-
-### 🎯 User Experience
-- **Visual Feedback**:
-  - Checkerboard pattern for transparent areas during editing
-  - Magnifying loupe when dragging crop points
-  - Real-time filter preview
-  - Clear status notifications
-
-- **Touch & Mouse Support**:
-  - Responsive controls for both desktop and mobile
-  - Larger touch targets (30px) for mobile devices
-  - Drag-and-drop crop point adjustment
+- **Quick Scan command**: Run `Quick Scan: Scan your document` from the command palette or add it to the mobile toolbar.
+- **Camera and gallery input**: Open the native image picker to take a photo or choose an existing image.
+- **Automatic page detection**: Detect the corners of a document before cropping.
+- **Perspective correction**: Adjust four crop points manually and straighten the page.
+- **Rotation**: Rotate the image clockwise or counter-clockwise in 90-degree steps.
+- **Background removal**: Sample the original background color, adjust tolerance from 0 to 50, and export transparent areas.
+- **Image filters**: Adjust brightness, contrast, and saturation with sliders or direct numeric entry. Enable black-and-white or color inversion.
+- **Correct processing order**: Background removal is based on the original image colors, then the selected filters are applied.
+- **HiDPI support**: Render and sample correctly on high-density displays.
+- **Touch and mouse support**: Use crop handles and controls on desktop or mobile.
+- **Transparent preview**: A checkerboard shows transparent pixels while editing.
+- **Mobile-friendly controls**: Compact panels, touch-sized controls, and transparent tool tabs.
+- **Export to PNG, JPG, or SVG**: PNG preserves transparency. SVG contains the final image in an SVG wrapper.
+- **Obsidian integration**: Save to the vault's configured attachment location and insert the resulting embed into the source note.
 
 ## Installation
 
-### From Obsidian Community Plugins
-1. Open Obsidian Settings
-2. Navigate to Community Plugins
-3. Search for "Scan Sketch"
-4. Click Install
-5. Enable the plugin
+### BRAT
 
-### Beta Testing with BRAT (Recommended for now)
+For testing or installing unreleased builds:
 
-**⚠️ Important:** Manual installation may cause the plugin to crash on mobile devices. Until the official community plugin release, we recommend using BRAT for installation.
+1. Install and enable [BRAT](https://github.com/TfTHacker/obsidian42-brat).
+2. Add this repository in BRAT using its GitHub repository address.
+3. Enable **Quick Scan** under **Settings > Community plugins**.
 
-1. Install the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) from Obsidian Community Plugins:
-   - Open Obsidian Settings → Community Plugins
-   - Search for "BRAT" (Beta Reviewers Auto-update Tool)
-   - Install and enable BRAT
+### Manual installation
 
-2. Add this plugin via BRAT:
-   - Open BRAT settings (Settings → BRAT)
-   - Click "Add Beta plugin"
-   - Enter: `showwaiyan/obsidian-scan-sketch`
-   - Click "Add Plugin"
+1. Download a release containing `main.js`, `manifest.json`, and `styles.css`.
+2. Create `.obsidian/plugins/quick-scan/` in your vault.
+3. Copy those three files into the folder.
+4. Reload Obsidian and enable **Quick Scan** under **Settings > Community plugins**.
 
-3. Enable the plugin:
-   - Go to Settings → Community Plugins
-   - Find "Sketch Scanner" and enable it
-
-BRAT will automatically keep the plugin updated with the latest releases.
-
-### Manual Installation (Desktop Only)
-
-**⚠️ Warning:** Manual installation can cause crashes on mobile devices. Use BRAT instead if you use Obsidian on mobile.
-
-1. Download the latest release from GitHub
-2. Extract files to `VaultFolder/.obsidian/plugins/obsidian-scan-sketch/`
-3. Reload Obsidian
-4. Enable plugin in Settings → Community Plugins
+Quick Scan is not desktop-only and is intended to work on mobile as well.
 
 ## Usage
 
-### Basic Workflow
+### Fast workflow
 
-1. **Open Scanner Modal**
-   - Right-click a note and choose **Scan note**
-   - On mobile, open the note's editor menu above the keyboard and choose **Scan note**
-   - Or use Command Palette: "Open sketch scanner"
+1. Open **Quick Scan: Scan your document** from the command palette, or use the mobile toolbar shortcut.
+2. Choose a photo from the camera or gallery picker.
+3. Rotate the image if needed.
+4. Use **Detect page corners** or open crop mode and adjust the four handles manually.
+5. Apply the crop.
+6. Open filters to adjust brightness, contrast, saturation, black-and-white, or inversion.
+7. Open background removal, click a background area, and adjust tolerance.
+8. Export with the checkmark button.
 
-2. **Upload Image**
-      - The camera or gallery picker opens automatically
-      - Use the image button to choose another image
+The final image is saved as an attachment and linked in the source note. The scanner can optionally close after a successful export.
 
-3. **Adjust & Process**
-   - **Rotate**: Click rotation buttons to orient correctly
-   - **Crop**: Click "Crop" to show corner points, drag to adjust, click "Apply"
-   - **Filters**: Adjust sliders for brightness, contrast, saturation
-   - **Background Removal**: Click to sample background color, adjust tolerance
+### Background removal
 
-4. **Export**
-   - Click the checkmark button to save the final image
-   - The configured format, automatic filename, and Obsidian attachment location are used
-   - The image is inserted into the note automatically
+Background removal samples the color from the original image before filters are applied. This means enabling inversion or changing brightness will not change which pixels match the sampled background.
 
-### Background Removal
+The selected color and tolerance remain available when switching between the background-removal and filter panels. Use **Clear** to remove the sample and restore the image without background removal.
 
-1. Click the background removal icon
-2. Click on any background area to sample the color
-3. Adjust tolerance slider to fine-tune selection
-4. Preview shows transparent areas with checkerboard pattern
-5. The preview updates immediately; use "Clear" to restore the original image
-6. Export as PNG to preserve transparency
+### Opening from a note
 
-### Perspective Crop
-
-1. Click "Crop" button to show corner points
-2. Click "Detect Corners" to automatically detect page edges, or manually drag the four corner points to match document borders
-3. Click "Apply" to transform the quadrilateral into a straight rectangle
+The scanner can also be opened from a note's file menu or editor menu. Those entry points preserve the note that should receive the exported embed.
 
 ## Settings
 
-Access plugin settings via **Settings → Scan Sketch**:
+Open **Settings > Quick Scan** to configure:
 
-- **Default Export Format**: Set default export file format (PNG, JPG, or SVG)
-- **Close Scanner After Export**: Toggle automatically closing the scanner modal upon successful export
-- **Toolbar Icon Size**: Adjust scanner toolbar icon size independently of Obsidian's interface zoom
-
-## Optional: Enhanced Notebook Styling
-
-For enhanced visual styling with notebook-themed backgrounds and pen colors, you can optionally add CSS snippets from the [Obsidian-Notebook-Themes](https://github.com/CyanVoxel/Obsidian-Notebook-Themes) repository by [@CyanVoxel](https://github.com/CyanVoxel).
-
-### How to Add Notebook Theme CSS:
-
-1. Visit the [Obsidian-Notebook-Themes repository](https://github.com/CyanVoxel/Obsidian-Notebook-Themes)
-2. Download the CSS snippets you want (e.g., notebook background colors, pen colors)
-3. In Obsidian, go to Settings → Appearance → CSS snippets
-4. Click the folder icon to open your snippets folder
-5. Copy the CSS files into this folder
-6. Return to Obsidian and enable the snippets
-
-### Available Notebook Themes:
-
-- **Page Backgrounds**: Manila, White, Blueprint
-- **Pen Colors**: White, Gray, Black, Red, Green, Blue, Light Blue, Purple
-- **Grid Patterns**: Optional grid overlay for notebook paper effect
-- **Image Recoloring**: Recolor images to match your pen color theme
-
-**Example Usage in Notes:**
-```markdown
----
-cssclasses: page-manila pen-black recolor-images
----
-```
-
-This applies a manila (tan) page background with black pen styling and recolors images accordingly.
-
-**Important Limitations:**
-- 📌 **SVG Export Only**: The notebook background and image recoloring functionality only works with **SVG exports**, not PNG exports.
-- For best results with notebook themes, always export as SVG format.
-- PNG exports will preserve transparency but won't apply CSS-based recoloring effects.
-
-**Note**: These CSS snippets are completely optional. The plugin works perfectly without them. They simply provide additional theming options for your scanned notes to match a physical notebook aesthetic.
-
-## Technical Architecture
-
-### Project Structure
-
-```
-obsidian-scan-sketch/
-├── main.ts                 # Plugin entry point & settings tab
-├── Services/              # Business logic & stateless utilities
-│   ├── CanvasRenderer.ts       # Canvas drawing & magnifier utilities
-│   ├── CropPointManager.ts     # Crop point validation & dragging
-│   ├── ImageBackgroundRemoval.ts  # Color sampling & background removal
-│   ├── ImageExport.ts          # PNG/JPG/SVG export encoders
-│   ├── ImageFilter.ts          # Brightness, contrast, saturation, B&W
-│   ├── ImageTransform.ts       # Rotation & perspective transforms
-│   ├── ImageUpload.ts          # File picker & camera capture
-│   ├── Interaction.ts          # Hit testing & pointer interaction
-│   ├── PageDetection.ts        # Automatic corner & edge detection
-│   ├── VaultExport.ts          # Obsidian vault file saving
-│   └── types.ts                # TypeScript interfaces & types
-├── UI/                    # User interface components
-│   ├── Components/
-│   │   ├── BackgroundRemovalControls.ts
-│   │   ├── ExportControls.ts
-│   │   ├── FilterControls.ts
-│   │   └── ImagePreview.ts
-│   └── Modals/
-│       └── scannerModal.ts
-├── test/                  # Vitest unit test suite (136 tests)
-└── styles.css            # Plugin CSS styling
-```
-
-### Key Technologies
-
-- **TypeScript**: Type-safe development with strict null checks
-- **Obsidian API**: Native integration with Obsidian
-- **Canvas API**: Image rendering and manipulation
-- **perspective-transform**: Perspective correction library
-- **Vitest**: Fast unit testing with happy-dom
-- **esbuild**: Lightning-fast bundling
-
-### Code Quality
-
-- **Testing**: 136 unit tests with >90% coverage
-- **Formatting**: EditorConfig (tabs, double quotes, LF)
-- **Type Safety**: Strict TypeScript configuration
-- **Documentation**: JSDoc comments for public APIs
+- **Default export format**: PNG, JPG, or SVG.
+- **Close scanner after export**: Close the scanner automatically after a successful save.
+- **Toolbar icon size**: Adjust the scanner toolbar icon size independently of Obsidian's interface zoom.
 
 ## Development
 
-### Prerequisites
-- Node.js v16 or higher
-- npm or yarn
+### Requirements
+
+- Node.js 16 or newer
+- npm
 
 ### Setup
+
 ```bash
-# Clone the repository
-git clone https://github.com/Showwaiyan/obsidian-scan-sketch.git
-
-# Install dependencies
 npm install
-
-# Start development mode (watch)
-npm run dev
-
-# Run tests
-npm test
-
-# Run tests with UI
-npm run test:ui
-
-# Run tests with coverage
-npm run test:coverage
-
-# Build for production
-npm run build
 ```
 
 ### Commands
 
-- `npm run dev` - Watch mode compilation with esbuild
-- `npm run build` - Production build with TypeScript checking
-- `npm test` - Run all tests with Vitest
-- `npm run test:ui` - Interactive test UI dashboard
-- `npm run test:coverage` - Generate coverage report
-- `npm run version` - Bump version and update manifest/versions.json
-
-### Testing
-
-Run specific tests:
 ```bash
-# Single test file
+npm run dev              # Watch and bundle source changes
+npm run build            # Type-check and create the production bundle
+npm test                 # Run the complete Vitest suite
+npm run test:coverage    # Generate coverage output
+npm run version          # Bump manifest and versions metadata
+```
+
+On Windows PowerShell, use `npm.cmd` if script execution blocks `npm`:
+
+```powershell
+npm.cmd test
+npm.cmd run build
+```
+
+Run one test file while iterating:
+
+```bash
 npx vitest test/ImagePreview.test.ts
-
-# Single test case
-npx vitest -t "should initialize"
-
-# Watch mode
-npx vitest --watch
+npx vitest test/ImageFilter.test.ts
+npx vitest test/ImageBackgroundRemoval.test.ts
 ```
 
-### Code Style
+## Code Map
 
-- **Indentation**: Tabs (width 4)
-- **Quotes**: Double quotes
-- **Semicolons**: Required
-- **Imports**: Obsidian imports first, then blank line, then local imports with path aliases
-- **Path Aliases**: Use `Services/` and `UI/` instead of relative paths
-
-Example:
-```typescript
-import { App, Modal, Notice } from "obsidian";
-
-import { uploadImageToCanvas } from "Services/ImageUpload";
-import { ImagePreview } from "UI/Components/ImagePreview";
+```text
+main.ts                         Plugin commands, menus, and settings
+UI/Modals/scannerModal.ts       Workflow coordinator and Obsidian modal
+UI/Components/ImagePreview.ts   Stateful canvas, rendering, and processing order
+UI/Components/FilterControls.ts Filter inputs and filter-panel UI
+UI/Components/BackgroundRemovalControls.ts
+                                Background-removal controls and sampled-color display
+UI/Components/ExportControls.ts Export button, vault path, and note-link workflow
+Services/ImageFilter.ts         Pixel filters
+Services/ImageBackgroundRemoval.ts
+                                Color sampling and transparency masking
+Services/ImageTransform.ts      Rotation, crop transformation, and image conversion
+Services/PageDetection.ts       Automatic document-corner detection
+Services/CanvasRenderer.ts      Checkerboard, crop handles, and magnifier rendering
+Services/ImageExport.ts         PNG, JPG, and SVG encoding
+Services/VaultExport.ts         Vault file creation
+test/                           Vitest tests and browser API mocks
+styles.css                      Modal, toolbar, panel, and responsive styling
 ```
 
-## Changelog
+`Services/` is the preferred home for stateless image or geometry algorithms. `ImagePreview` owns the changing image state and combines those operations into the display and export pipelines. `main.js` is generated by esbuild; edit TypeScript source and run the build instead of editing the bundle directly.
 
-### Version 1.0.0 (Current)
+## Processing Model
 
-**Features:**
-- Initial release
-- Image upload and camera capture
-- Perspective correction with interactive crop points
-- Image rotation (90° increments)
-- Advanced filters (brightness, contrast, saturation, B&W)
-- Background removal with tolerance adjustment
-- PNG/SVG export with transparency support
-- Checkerboard pattern for transparent areas
-- Configurable export folder
-- Touch and mouse support
-- HiDPI display support
+The image is rebuilt from its source whenever settings change:
 
-**Bug Fixes:**
-- Fixed transparent background export (removed black background fill)
-- Fixed background removal cropping issue (DPR dimension mismatch)
-- Fixed checkerboard contamination in background removal
+```text
+Original image
+    -> background removal using the sampled original RGB color
+    -> brightness / contrast / saturation / B&W / inversion
+    -> display canvas or exported canvas
+```
+
+This order is important. New visual settings must be stored as state and applied during both redraw and export, or they will disappear when another setting causes a redraw.
+
+The canvas uses CSS pixels for layout and device pixels for `ImageData`. When working with pointer positions or crop points, multiply CSS coordinates by `window.devicePixelRatio` before reading pixels; divide detected image coordinates by the same value before displaying them.
 
 ## Contributing
 
-Contributions are welcome! Please follow these guidelines:
+Keep changes focused and follow the existing conventions:
 
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Follow code style**: Use tabs, double quotes, proper imports
-4. **Write tests**: Add tests for new features
-5. **Run tests**: `npm test` (all tests must pass)
-6. **Build**: `npm run build` (must build without errors)
-7. **Commit**: Use clear, descriptive commit messages
-8. **Push**: `git push origin feature/amazing-feature`
-9. **Open a Pull Request**
+- Tabs, double quotes, and semicolons.
+- Obsidian imports first, then local imports.
+- Pure processing functions in `Services/`.
+- Tests beside the behavior they cover.
+- Run the narrowest relevant test first, followed by `npm run build`.
+- Do not edit generated `main.js` by hand.
+
+For a deeper architecture walkthrough, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## License
 
-This project is licensed under the OBSD License - see the LICENSE file for details.
+This project is licensed under the OBSD License. See [LICENSE](LICENSE).
 
-## Support
+## Credits
 
-- **Issues**: Report bugs on [GitHub Issues](https://github.com/Showwaiyan/obsidian-scan-sketch/issues)
-- **Discussions**: Ask questions in [GitHub Discussions](https://github.com/Showwaiyan/obsidian-scan-sketch/discussions)
-- **Documentation**: See [Obsidian Plugin Guidelines](https://docs.obsidian.md/Plugins)
-
-## Acknowledgments
-
-- Built with [Obsidian API](https://github.com/obsidianmd/obsidian-api)
-- Uses [perspective-transform](https://github.com/jlouthan/perspective-transform) for perspective correction
-- Optional notebook theme CSS snippets available from [Obsidian-Notebook-Themes](https://github.com/CyanVoxel/Obsidian-Notebook-Themes) by [@CyanVoxel](https://github.com/CyanVoxel) (v2.2.3)
-- Inspired by document scanning apps and the Obsidian community
-
----
-
-**Made with ❤️ for the Obsidian community**
+- [Obsidian API](https://github.com/obsidianmd/obsidian-api)
+- [perspective-transform](https://github.com/jlouthan/perspective-transform)
