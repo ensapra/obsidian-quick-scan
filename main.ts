@@ -6,6 +6,7 @@ interface HandwrittenScannerSettings {
 	exportDefaultFormat: ExportFormat;
 	closeAfterExport: boolean;
 	toolbarIconSize: number;
+	quickSketchAction: "none" | "gallery" | "camera";
 }
 
 const DEFAULT_TOOLBAR_ICON_SIZE = 40;
@@ -14,6 +15,7 @@ const DEFAULT_SETTINGS: HandwrittenScannerSettings = {
 	exportDefaultFormat: "png",
 	closeAfterExport: true,
 	toolbarIconSize: DEFAULT_TOOLBAR_ICON_SIZE,
+	quickSketchAction: "camera",
 };
 
 export default class HandWrittenPlugin extends Plugin {
@@ -56,7 +58,7 @@ export default class HandWrittenPlugin extends Plugin {
 	}
 
 	private openScanner(sourcePath?: string): void {
-		new ScannerModal(this.app, this, sourcePath).open();
+		new ScannerModal(this.app, this, sourcePath, this.settings.quickSketchAction).open();
 	}
 
 	async loadSettings() {
@@ -85,6 +87,21 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
+
+		new Setting(containerEl)
+			.setName("Quick sketch action")
+			.setDesc("Choose what opens automatically when starting Quick Scan")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("none", "Do nothing")
+					.addOption("gallery", "Open gallery")
+					.addOption("camera", "Open camera")
+					.setValue(this.plugin.settings.quickSketchAction)
+					.onChange(async (value) => {
+						this.plugin.settings.quickSketchAction = value as "none" | "gallery" | "camera";
+						await this.plugin.saveSettings();
+					}),
+			);
 
 		new Setting(containerEl)
 			.setName("Toolbar icon size")

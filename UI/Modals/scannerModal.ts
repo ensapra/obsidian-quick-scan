@@ -17,6 +17,7 @@ export class ScannerModal extends Modal {
 	private confirmButtonWrapper: HTMLElement;
 	private canvas: ImagePreview;
 	private btnPhotoUpload: ButtonComponent;
+	private btnPhotoCamera: ButtonComponent;
 	private btnPhotoRotateCW: ButtonComponent;
 	private btnPhotoRotateACW: ButtonComponent;
 	private btnDetectCorners: ButtonComponent;
@@ -30,11 +31,18 @@ export class ScannerModal extends Modal {
 	private filterControls: FilterControls;
 	private bgRemovalControls: BackgroundRemovalControls;
 	private exportControls: ExportControls;
+	private launchAction: "none" | "gallery" | "camera";
 
-	constructor(app: App, plugin: HandWrittenPlugin, sourcePath?: string) {
+constructor(
+		app: App,
+		plugin: HandWrittenPlugin,
+		sourcePath?: string,
+		launchAction: "none" | "gallery" | "camera" = "none",
+	) {
 		super(app);
 		this.plugin = plugin;
 		this.sourcePath = sourcePath;
+		this.launchAction = launchAction;
 		this.setTitle("Scan your note");
 		this.modalEl.addClass("scanner-modal");
 		this.modalEl.style.setProperty(
@@ -73,6 +81,12 @@ export class ScannerModal extends Modal {
 	}
 
 		//btn setup
+		this.btnPhotoCamera = new ButtonComponent(this.buttonWrapper)
+			.setIcon("camera")
+			.setTooltip("Take a photo with camera")
+			.setCta()
+			.onClick(() => this.openImagePicker(true));
+
 		this.btnPhotoUpload = new ButtonComponent(this.buttonWrapper)
 			.setIcon("image")
 			.setTooltip("Choose image from gallery")
@@ -151,11 +165,12 @@ export class ScannerModal extends Modal {
 			.onClick(() => this.cancelCrop());
 		this.setImageControlsEnabled(false);
 
-		// Open the native camera/gallery picker as soon as the scanner is ready.
-		this.openImagePicker();
+		if (this.launchAction !== "none") {
+			this.openImagePicker(this.launchAction === "camera");
+		}
 	}
 
-	private openImagePicker(openCamera = true): void {
+	private openImagePicker(openCamera: boolean): void {
 		uploadImageToCanvas((file) => {
 			this.canvas.darawImage(file);
 			this.setImageControlsEnabled(true);
