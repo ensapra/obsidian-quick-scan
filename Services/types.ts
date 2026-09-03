@@ -87,4 +87,5 @@ export interface ImageFilterConfig {
 	contrast: number;        // -100 to +100
 	saturation: number;      // -100 to +100
 	blackAndWhite: boolean;  // High-contrast B&W for documents
+	invert: boolean;         // Invert image colors
 }

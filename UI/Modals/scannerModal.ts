@@ -77,12 +77,7 @@ export class ScannerModal extends Modal {
 			.setIcon("image")
 			.setTooltip("Choose image from camera or gallery")
 			.setCta()
-			.onClick(() =>
-				uploadImageToCanvas(this.canvas.darawImage.bind(this.canvas)),
-			);
-
-		// Open the native camera/gallery picker as soon as the scanner is ready.
-		uploadImageToCanvas(this.canvas.darawImage.bind(this.canvas));
+			.onClick(() => this.openImagePicker());
 
 		this.btnPhotoRotateCW = new ButtonComponent(this.buttonWrapper)
 			.setIcon("rotate-cw")
@@ -118,10 +113,10 @@ export class ScannerModal extends Modal {
 			this.bgRemovalPanelWrapper,
 			() => this.toggleBackgroundRemovalMode(),
 			(tolerance) => this.canvas.updateBgRemovalTolerance(tolerance),
-			(enabled) => this.canvas.toggleBgRemovalPreview(enabled),
 			() => this.confirmBackgroundRemoval(),
 			() => this.cancelBackgroundRemoval(),
 			() => this.canvas.isImageLoaded(),
+			() => this.canvas.clearBackgroundSample(),
 		);
 		this.btnRemoveBG = this.bgRemovalControls.createRemoveBGButton(this.buttonWrapper);
 
@@ -157,6 +152,27 @@ export class ScannerModal extends Modal {
 			.setIcon("x")
 			.setTooltip("Cancel")
 			.onClick(() => this.cancelCrop());
+		this.setImageControlsEnabled(false);
+
+		// Open the native camera/gallery picker as soon as the scanner is ready.
+		this.openImagePicker();
+	}
+
+	private openImagePicker(): void {
+		uploadImageToCanvas((file) => {
+			this.canvas.darawImage(file);
+			this.setImageControlsEnabled(true);
+		});
+	}
+
+	private setImageControlsEnabled(enabled: boolean): void {
+		this.btnPhotoRotateCW?.setDisabled(!enabled);
+		this.btnPhotoRotateACW?.setDisabled(!enabled);
+		this.btnDetectCorners?.setDisabled(!enabled);
+		this.btnCrop?.setDisabled(!enabled);
+		this.btnRemoveBG?.setDisabled(!enabled);
+		this.btnEdit?.setDisabled(!enabled);
+		this.btnExport?.setDisabled(!enabled);
 	}
 
 	private detectAndShowCorners() {

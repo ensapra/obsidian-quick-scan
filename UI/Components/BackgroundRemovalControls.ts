@@ -14,20 +14,18 @@ export class BackgroundRemovalControls {
 
 	// Callbacks
 	private onToleranceChange: (tolerance: number) => void;
-	private onPreviewToggle: (enabled: boolean) => void;
 	private onApply: () => void | Promise<void>;
 	private onCancel: () => void;
 	private checkImageLoaded: () => boolean;
+	private onClearSample: () => void;
 
 	// State
 	private tolerance: number;
-	private previewEnabled: boolean;
 	private sampledColor: RGB | null;
 	private toleranceDebounceTimer: number | null;
 
 	// UI elements
 	private toleranceSlider: HTMLInputElement | null;
-	private previewCheckbox: HTMLInputElement | null;
 	private colorSwatch: HTMLElement | null;
 	private colorText: HTMLElement | null;
 	private instructionText: HTMLElement | null;
@@ -36,30 +34,28 @@ export class BackgroundRemovalControls {
 		panelContainer: HTMLElement,
 		onToggleMode: () => void,
 		onToleranceChange: (tolerance: number) => void,
-		onPreviewToggle: (enabled: boolean) => void,
 		onApply: () => void | Promise<void>,
 		onCancel: () => void,
 		checkImageLoaded: () => boolean,
+		onClearSample: () => void,
 	) {
 		this.panelContainer = panelContainer;
 		this.gridContainer = this.panelContainer.createDiv();
 		this.onToggleMode = onToggleMode;
 		this.onToleranceChange = onToleranceChange;
-		this.onPreviewToggle = onPreviewToggle;
 		this.onApply = onApply;
 		this.onCancel = onCancel;
 		this.checkImageLoaded = checkImageLoaded;
+		this.onClearSample = onClearSample;
 		this.isExpanded = false;
 
 		// Initialize state
 		this.tolerance = 15; // default
-		this.previewEnabled = true; // preview on by default
 		this.sampledColor = null;
 		this.toleranceDebounceTimer = null;
 
 		// Initialize UI element references
 		this.toleranceSlider = null;
-		this.previewCheckbox = null;
 		this.colorSwatch = null;
 		this.colorText = null;
 		this.instructionText = null;
@@ -117,14 +113,10 @@ export class BackgroundRemovalControls {
 	private resetState() {
 		this.sampledColor = null;
 		this.tolerance = 15;
-		this.previewEnabled = true;
 
 		// Reset UI
 		if (this.toleranceSlider) {
 			this.toleranceSlider.value = "15";
-		}
-		if (this.previewCheckbox) {
-			this.previewCheckbox.checked = true;
 		}
 		this.updateColorDisplay(null);
 	}
@@ -147,10 +139,6 @@ export class BackgroundRemovalControls {
 	/**
 	 * Get preview enabled state
 	 */
-	public isPreviewEnabled(): boolean {
-		return this.previewEnabled;
-	}
-
 	/**
 	 * Build the panel UI
 	 */
@@ -160,9 +148,6 @@ export class BackgroundRemovalControls {
 
 		// Create tolerance control
 		this.createToleranceControl();
-
-		// Create preview toggle
-		this.createPreviewToggle();
 
 		// Create color display
 		this.createColorDisplay();
@@ -224,32 +209,6 @@ export class BackgroundRemovalControls {
 	}
 
 	/**
-	 * Create preview toggle
-	 */
-	private createPreviewToggle() {
-		const wrapper = this.gridContainer.createDiv("bg-removal-control");
-		const toggleWrapper = wrapper.createDiv("bg-removal-preview-wrapper");
-
-		this.previewCheckbox = toggleWrapper.createEl("input", {
-			type: "checkbox",
-			cls: "checkbox-input",
-			attr: {
-				id: "bg-preview-checkbox",
-				checked: "true",
-			},
-		});
-
-		const label = toggleWrapper.createEl("label", { text: "Show preview" });
-		label.htmlFor = "bg-preview-checkbox";
-
-		this.previewCheckbox.addEventListener("change", (e) => {
-			const checked = (e.target as HTMLInputElement).checked;
-			this.previewEnabled = checked;
-			this.onPreviewToggle(checked);
-		});
-	}
-
-	/**
 	 * Create color display
 	 */
 	private createColorDisplay() {
@@ -265,6 +224,14 @@ export class BackgroundRemovalControls {
 			text: "None",
 			cls: "bg-removal-color-text",
 		});
+
+		new ButtonComponent(displayWrapper)
+			.setButtonText("Clear")
+			.setTooltip("Clear sampled background color")
+			.onClick(() => {
+				this.onClearSample();
+				this.updateSampledColor(null);
+			});
 	}
 
 	/**

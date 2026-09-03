@@ -19,12 +19,14 @@ export class FilterControls {
 	private contrast: number;
 	private saturation: number;
 	private blackAndWhite: boolean;
+	private invert: boolean;
 
 	// UI elements
 	private brightnessSlider: HTMLInputElement | null;
 	private contrastSlider: HTMLInputElement | null;
 	private saturationSlider: HTMLInputElement | null;
 	private bwToggle: HTMLInputElement | null;
+	private invertToggle: HTMLInputElement | null;
 
 	constructor(
 		panelContainer: HTMLElement,
@@ -46,12 +48,14 @@ export class FilterControls {
 		this.contrast = 0;
 		this.saturation = 0;
 		this.blackAndWhite = false;
+		this.invert = false;
 
 		// Initialize UI element references
 		this.brightnessSlider = null;
 		this.contrastSlider = null;
 		this.saturationSlider = null;
 		this.bwToggle = null;
+		this.invertToggle = null;
 
 		// Build the panel immediately
 		this.buildPanel();
@@ -106,6 +110,7 @@ export class FilterControls {
 		this.createContrastControl();
 		this.createSaturationControl();
 		this.createBlackAndWhiteToggle();
+		this.createInvertToggle();
 
 		// Create reset button
 		this.createResetButton();
@@ -234,6 +239,26 @@ export class FilterControls {
 		});
 	}
 
+	private createInvertToggle() {
+		if (!this.gridContainer) return;
+
+		const wrapper = this.gridContainer.createDiv("filter-control");
+		const label = wrapper.createDiv("filter-label");
+		label.createSpan({ text: "Invert Colors" });
+
+		const toggleWrapper = wrapper.createDiv("filter-toggle-wrapper");
+		this.invertToggle = toggleWrapper.createEl("input", {
+			type: "checkbox",
+			cls: "filter-checkbox",
+		});
+
+		this.invertToggle.addEventListener("change", (e) => {
+			const checked = (e.target as HTMLInputElement).checked;
+			this.invert = checked;
+			this.onFilterChange({ invert: checked });
+		});
+	}
+
 	/**
 	 * Create reset button
 	 */
@@ -259,6 +284,7 @@ export class FilterControls {
 		this.contrast = 0;
 		this.saturation = 0;
 		this.blackAndWhite = false;
+		this.invert = false;
 
 		if (this.brightnessSlider) {
 			this.brightnessSlider.value = "0";
@@ -281,6 +307,10 @@ export class FilterControls {
 
 		if (this.bwToggle) {
 			this.bwToggle.checked = false;
+		}
+
+		if (this.invertToggle) {
+			this.invertToggle.checked = false;
 		}
 	}
 

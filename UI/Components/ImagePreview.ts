@@ -68,7 +68,6 @@ export class ImagePreview extends Component {
 	private backgroundRemovalMode: boolean;
 	private sampledBackgroundColor: RGB | null;
 	private bgRemovalTolerance: number;
-	private bgRemovalPreviewEnabled: boolean;
 	private originalImageDataBeforeRemoval: ImageData | null;
 	private onColorSampled: ((color: RGB) => void) | null;
 	private readonly backgroundSampleHandler = (event: MouseEvent) =>
@@ -136,7 +135,6 @@ export class ImagePreview extends Component {
 		this.backgroundRemovalMode = false;
 		this.sampledBackgroundColor = null;
 		this.bgRemovalTolerance = 15;
-		this.bgRemovalPreviewEnabled = true;
 		this.originalImageDataBeforeRemoval = null;
 		this.onColorSampled = null;
 
@@ -685,7 +683,8 @@ export class ImagePreview extends Component {
 		const hasFilters = this.filterConfig.brightness !== 0 
 			|| this.filterConfig.contrast !== 0 
 			|| this.filterConfig.saturation !== 0 
-			|| this.filterConfig.blackAndWhite;
+			|| this.filterConfig.blackAndWhite
+			|| this.filterConfig.invert;
 
 		if (!hasFilters) {
 			return; // No filters to apply
@@ -836,9 +835,7 @@ public exitBackgroundRemovalMode(): void {
 			}
 
 			// Trigger preview if enabled
-			if (this.bgRemovalPreviewEnabled) {
-				this.previewBackgroundRemoval();
-			}
+			this.previewBackgroundRemoval();
 		}
 
 		return color;
@@ -850,26 +847,18 @@ public exitBackgroundRemovalMode(): void {
 	public updateBgRemovalTolerance(tolerance: number): void {
 		this.bgRemovalTolerance = tolerance;
 
-		if (this.bgRemovalPreviewEnabled && this.sampledBackgroundColor) {
+		if (this.sampledBackgroundColor) {
 			this.previewBackgroundRemoval();
 		}
 	}
 
-	/**
-	 * Toggle preview on/off
-	 */
-	public toggleBgRemovalPreview(enabled: boolean): void {
-		this.bgRemovalPreviewEnabled = enabled;
-
-		if (enabled && this.sampledBackgroundColor) {
-			this.previewBackgroundRemoval();
-		} else {
-			this.restoreOriginalBeforeRemoval();
-		}
+	public clearBackgroundSample(): void {
+		this.sampledBackgroundColor = null;
+		this.restoreOriginalBeforeRemoval();
 	}
 
 	/**
-	 * Show preview of background removal
+	 * Preview background removal
 	 */
 	private previewBackgroundRemoval(): void {
 		if (!this.sampledBackgroundColor || !this.originalImageDataBeforeRemoval) {
@@ -1003,7 +992,8 @@ public exitBackgroundRemovalMode(): void {
 			const hasFilters = this.filterConfig.brightness !== 0 
 				|| this.filterConfig.contrast !== 0 
 				|| this.filterConfig.saturation !== 0 
-				|| this.filterConfig.blackAndWhite;
+				|| this.filterConfig.blackAndWhite
+				|| this.filterConfig.invert;
 
 			if (hasFilters) {
 				const imageData = tempCtx.getImageData(0, 0, actualWidth, actualHeight);
@@ -1068,7 +1058,8 @@ public exitBackgroundRemovalMode(): void {
 			const hasFilters = this.filterConfig.brightness !== 0 
 				|| this.filterConfig.contrast !== 0 
 				|| this.filterConfig.saturation !== 0 
-				|| this.filterConfig.blackAndWhite;
+				|| this.filterConfig.blackAndWhite
+				|| this.filterConfig.invert;
 
 			if (hasFilters) {
 				const actualWidth = Math.floor(cssWidth * dpr);

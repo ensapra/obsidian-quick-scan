@@ -37,6 +37,7 @@ describe("ImageFilter", () => {
 			expect(DEFAULT_FILTER_CONFIG.contrast).toBe(0);
 			expect(DEFAULT_FILTER_CONFIG.saturation).toBe(0);
 			expect(DEFAULT_FILTER_CONFIG.blackAndWhite).toBe(false);
+			expect(DEFAULT_FILTER_CONFIG.invert).toBe(false);
 		});
 	});
 
@@ -278,6 +279,7 @@ describe("ImageFilter", () => {
 				contrast: 30,
 				saturation: -50,
 				blackAndWhite: false,
+				invert: false,
 			};
 			expect(hasActiveFilters(config)).toBe(true);
 		});
@@ -309,6 +311,19 @@ describe("ImageFilter", () => {
 			expect(imageData.data[1]).toBeGreaterThan(original.data[1]); // Green channel of red pixel
 		});
 
+		it("should invert colors without changing alpha", () => {
+			const imageData = cloneImageData(testImageData);
+
+			applyFilters(imageData, { ...DEFAULT_FILTER_CONFIG, invert: true });
+
+			expect(Array.from(imageData.data)).toEqual([
+				0, 255, 255, 255,
+				255, 0, 255, 255,
+				255, 255, 0, 255,
+				0, 0, 0, 255,
+			]);
+		});
+
 		it("should apply black and white conversion", () => {
 			const imageData = cloneImageData(testImageData);
 			const config: ImageFilterConfig = {
@@ -332,6 +347,7 @@ describe("ImageFilter", () => {
 				contrast: 0,
 				saturation: 100, // This should be ignored
 				blackAndWhite: true,
+				invert: false,
 			};
 
 			applyFilters(imageData, config);
@@ -350,6 +366,7 @@ describe("ImageFilter", () => {
 				contrast: 30,
 				saturation: -50,
 				blackAndWhite: false,
+				invert: false,
 			};
 
 			// Should not throw error

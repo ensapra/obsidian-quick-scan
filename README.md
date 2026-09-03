@@ -28,6 +28,7 @@ A powerful Obsidian plugin for scanning, processing, and enhancing handwritten n
   - Contrast enhancement (-100 to +100)
   - Saturation control (-100 to +100)
   - Black & White conversion
+   - Color inversion
   - Real-time preview with 200ms debouncing
 
 ### 💾 Export & Storage Options

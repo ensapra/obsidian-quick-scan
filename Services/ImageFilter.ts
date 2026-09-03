@@ -8,6 +8,7 @@ export const DEFAULT_FILTER_CONFIG: ImageFilterConfig = {
 	contrast: 0,
 	saturation: 0,
 	blackAndWhite: false,
+	invert: false,
 };
 
 /**
@@ -137,7 +138,18 @@ export function hasActiveFilters(config: ImageFilterConfig): boolean {
 	return config.brightness !== 0 
 		|| config.contrast !== 0 
 		|| config.saturation !== 0 
-		|| config.blackAndWhite;
+		|| config.blackAndWhite
+		|| config.invert;
+}
+
+export function invertColors(imageData: ImageData): void {
+	const data = imageData.data;
+
+	for (let i = 0; i < data.length; i += 4) {
+		data[i] = 255 - data[i];
+		data[i + 1] = 255 - data[i + 1];
+		data[i + 2] = 255 - data[i + 2];
+	}
 }
 
 /**
@@ -166,6 +178,10 @@ export function applyFilters(
 	// 3. Brightness and Contrast (always apply last for best control)
 	if (config.brightness !== 0 || config.contrast !== 0) {
 		applyBrightnessContrast(imageData, config.brightness, config.contrast);
+	}
+
+	if (config.invert) {
+		invertColors(imageData);
 	}
 }
 
