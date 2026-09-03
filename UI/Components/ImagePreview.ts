@@ -114,7 +114,7 @@ export class ImagePreview extends Component {
 	}
 
 	public setup() {
-		const ctx = this.canvas.getContext("2d");
+		const ctx = this.canvas.getContext("2d", { willReadFrequently: true });
 		if (!ctx) throw new Error("Failed to get 2D contect");
 		this.ctx = ctx;
 
@@ -867,7 +867,7 @@ public exitBackgroundRemovalMode(): void {
 		const tempCanvas = createEl("canvas");
 		tempCanvas.width = actualWidth;
 		tempCanvas.height = actualHeight;
-		const tempCtx = tempCanvas.getContext("2d");
+		const tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
 		if (!tempCtx) {
 			// Fallback to current canvas if temp context fails
@@ -938,7 +938,7 @@ public exitBackgroundRemovalMode(): void {
 		const exportCanvas = createEl("canvas");
 		exportCanvas.width = this.canvas.width;
 		exportCanvas.height = this.canvas.height;
-		const exportCtx = exportCanvas.getContext("2d");
+		const exportCtx = exportCanvas.getContext("2d", { willReadFrequently: true });
 
 		if (!exportCtx) {
 			throw new Error("Failed to create export canvas context");

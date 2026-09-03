@@ -237,7 +237,7 @@ If your plugin does not need CSS, delete this file.
 .filter-panel-wrapper {
 	padding: 8px;
 	border: 0;
-	background-color: var(--background-primary);
+	background: transparent;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -405,7 +405,7 @@ If your plugin does not need CSS, delete this file.
 .bg-removal-panel-wrapper {
 	padding: 16px;
 	border: 0;
-	background-color: var(--background-primary);
+	background: transparent;
 	display: flex;
 	justify-content: center;
 	align-items: center;

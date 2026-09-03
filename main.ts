@@ -29,6 +29,13 @@ export default class HandWrittenPlugin extends Plugin {
 			callback: () => void this.openScanner(),
 		});
 
+		this.addCommand({
+			id: "quick-scan",
+			name: "Quick Scan: Scan your document",
+			icon: "scan",
+			callback: () => void this.openScanner(),
+		});
+
 		this.registerEvent(this.app.workspace.on("file-menu", (menu, file) => {
 			if (!(file instanceof TFile)) return;
 
