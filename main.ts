@@ -55,8 +55,6 @@ export default class HandWrittenPlugin extends Plugin {
 		new ScannerModal(this.app, this, sourcePath).open();
 	}
 
-	onunload() {}
-
 	async loadSettings() {
 		const savedSettings = await this.loadData() as Partial<HandwrittenScannerSettings> | null;
 

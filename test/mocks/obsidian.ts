@@ -1,5 +1,21 @@
 export class App {}
-export class Plugin {}
+export class Component {
+	load() {}
+	unload() {}
+
+	addChild<T extends Component>(component: T) {
+		return component;
+	}
+	registerDomEvent(
+		el: HTMLElement,
+		type: string,
+		handler: EventListener,
+		options?: AddEventListenerOptions,
+	) {
+		el.addEventListener(type, handler, options);
+	}
+}
+export class Plugin extends Component {}
 export class PluginSettingTab {
 	app: any;
 	plugin: any;

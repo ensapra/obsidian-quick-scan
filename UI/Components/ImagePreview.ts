@@ -34,8 +34,9 @@ import {
 	OperationResult,
 	ImageFilterConfig,
 } from "Services/types";
+import { Component } from "obsidian";
 
-export class ImagePreview {
+export class ImagePreview extends Component {
 	private parent: HTMLElement;
 	private canvas: HTMLCanvasElement;
 	private ctx: CanvasRenderingContext2D;
@@ -68,6 +69,8 @@ export class ImagePreview {
 	private bgRemovalPreviewEnabled: boolean;
 	private originalImageDataBeforeRemoval: ImageData | null;
 	private onColorSampled: ((color: RGB) => void) | null;
+	private readonly backgroundSampleHandler = (event: MouseEvent) =>
+		this.onBackgroundSampleClick(event);
 
 	// Configuration
 	private magnifierConfig: MagnifierConfig;
@@ -79,6 +82,7 @@ export class ImagePreview {
 		element: HTMLCanvasElement,
 		ratio: number,
 	) {
+		super();
 		this.parent = parent;
 		this.canvas = element;
 		this.ratio = ratio;
@@ -141,14 +145,14 @@ export class ImagePreview {
 
 	private setupInputEvents() {
 		// Mouse events (desktop)
-		this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
-		this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
-		this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
+		this.registerDomEvent(this.canvas, "mousedown", this.onMouseDown.bind(this));
+		this.registerDomEvent(this.canvas, "mousemove", this.onMouseMove.bind(this));
+		this.registerDomEvent(this.canvas, "mouseup", this.onMouseUp.bind(this));
 
 		// Touch events (mobile)
-		this.canvas.addEventListener("touchstart", this.onTouchStart.bind(this), { passive: false });
-		this.canvas.addEventListener("touchmove", this.onTouchMove.bind(this), { passive: false });
-		this.canvas.addEventListener("touchend", this.onTouchEnd.bind(this));
+		this.registerDomEvent(this.canvas, "touchstart", this.onTouchStart.bind(this), { passive: false });
+		this.registerDomEvent(this.canvas, "touchmove", this.onTouchMove.bind(this), { passive: false });
+		this.registerDomEvent(this.canvas, "touchend", this.onTouchEnd.bind(this));
 	}
 
 	/**
@@ -748,7 +752,7 @@ export class ImagePreview {
 	this.canvas.setCssProps({ cursor: "crosshair" });
 
 	// Set up click listener for sampling
-	this.canvas.addEventListener("click", this.onBackgroundSampleClick.bind(this));
+	this.canvas.addEventListener("click", this.backgroundSampleHandler);
 
 		return { success: true, message: "Click on background to sample" };
 	}
@@ -763,7 +767,7 @@ public exitBackgroundRemovalMode(): void {
 	this.canvas.setCssProps({ cursor: "default" });
 	
 	// Remove click listener
-	this.canvas.removeEventListener("click", this.onBackgroundSampleClick.bind(this));
+	this.canvas.removeEventListener("click", this.backgroundSampleHandler);
 }
 
 	/**

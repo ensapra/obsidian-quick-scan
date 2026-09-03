@@ -79,7 +79,7 @@ export class ExportControls {
 				sourcePath,
 			);
 			const file = await saveToVault(this.app.vault, filePath, blob);
-			await this.insertLink(sourcePath, file.path);
+			await this.insertLink(sourcePath, file);
 
 			processingNotice.hide();
 			new Notice(`Saved scan to ${file.path}`, 3000);
@@ -91,12 +91,16 @@ export class ExportControls {
 		}
 	}
 
-	private async insertLink(sourcePath: string, attachmentPath: string): Promise<void> {
+	private async insertLink(sourcePath: string, attachment: TFile): Promise<void> {
+		const markdownLink = this.app.fileManager.generateMarkdownLink(
+			attachment,
+			sourcePath,
+		);
 		const activeFile = this.app.workspace.getActiveFile();
 		const editor = this.app.workspace.activeEditor?.editor;
 		if (activeFile?.path === sourcePath && editor) {
 			const cursor = editor.getCursor();
-			editor.replaceRange(`![[${attachmentPath}]]\n`, cursor);
+			editor.replaceRange(`${markdownLink}\n`, cursor);
 			return;
 		}
 
@@ -104,7 +108,7 @@ export class ExportControls {
 		if (sourceFile instanceof TFile) {
 			await this.app.vault.process(
 				sourceFile,
-				(content) => `${content}${content.endsWith("\n") ? "" : "\n"}\n![[${attachmentPath}]]\n`,
+				(content) => `${content}${content.endsWith("\n") ? "" : "\n"}\n${markdownLink}\n`,
 			);
 		}
 	}

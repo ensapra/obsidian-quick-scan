@@ -60,6 +60,7 @@ export class ScannerModal extends Modal {
 	onOpen() {
 		try {
 		this.canvas.setup();
+		this.canvas.load();
 	} catch (error) {
 		console.error(`Error: ${error.message}`);
 		new Notice(
@@ -383,9 +384,6 @@ export class ScannerModal extends Modal {
 			this.bgRemovalControls.destroy();
 		}
 		
-		// Clean up export controls
-		if (this.exportControls) {
-			// No destroy method needed, just null it
-		}
+		this.canvas.unload();
 	}
 }
