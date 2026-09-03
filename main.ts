@@ -2,7 +2,6 @@ import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import type { ExportFormat } from "./Services/ImageExport";
 
 interface HandwrittenScannerSettings {
-	exportDefaultFolder?: string;
 	exportFolders: string[];
 	exportDefaultFormat: ExportFormat;
 	closeAfterExport: boolean;
@@ -47,26 +46,17 @@ export default class HandWrittenPlugin extends Plugin {
 	onunload() {}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			(await this.loadData() as Partial<HandwrittenScannerSettings> | null) || {},
-		);
+		const savedSettings = await this.loadData() as Partial<HandwrittenScannerSettings> | null;
+		const savedFolders = savedSettings?.exportFolders;
+		const exportFolders = Array.isArray(savedFolders)
+			? savedFolders.filter((folder): folder is string => typeof folder === "string")
+			: [];
 
-		// Migration / Fallback: If exportFolders is empty or not an array, use exportDefaultFolder or default to ["Scanned"]
-		if (
-			!Array.isArray(this.settings.exportFolders) ||
-			this.settings.exportFolders.length === 0
-		) {
-			if (
-				this.settings.exportDefaultFolder &&
-				typeof this.settings.exportDefaultFolder === "string"
-			) {
-				this.settings.exportFolders = [this.settings.exportDefaultFolder];
-			} else {
-				this.settings.exportFolders = ["Scanned"];
-			}
-		}
+		this.settings = {
+			...DEFAULT_SETTINGS,
+			...savedSettings,
+			exportFolders: exportFolders.length > 0 ? exportFolders : DEFAULT_SETTINGS.exportFolders,
+		};
 	}
 
 	async saveSettings() {
@@ -82,33 +72,13 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	getSettingDefinitions() {
-		return [
-			{
-				id: "exportFolders",
-				name: "Destination folders 34",
-				description: "Manage destination folders for saving scanned images.",
-			},
-			{
-				id: "exportDefaultFormat",
-				name: "Default export format",
-				description: "Default file format for exporting scanned images",
-			},
-			{
-				id: "closeAfterExport",
-				name: "Close scanner after export",
-				description: "Automatically close the scanner window after successfully exporting an image",
-			},
-		];
-	}
-
 	display(): void {
 		const { containerEl } = this;
 
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Destination folders 34")
+			.setName("Destination folders")
 			.setDesc(
 				"Manage destination folders for saving scanned images. In the export dialog, you can choose from these folders using a dropdown menu.",
 			);
