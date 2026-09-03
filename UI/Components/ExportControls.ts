@@ -74,8 +74,11 @@ export class ExportControls {
 				: format === "jpg"
 					? await exportCanvasToJPG(canvas)
 					: exportCanvasToSVG(canvas);
-			const folder = this.app.fileManager.getNewFileParent(sourcePath, filename);
-			const file = await saveToVault(this.app.vault, folder.path, filename, blob);
+			const filePath = await this.app.fileManager.getAvailablePathForAttachment(
+				filename,
+				sourcePath,
+			);
+			const file = await saveToVault(this.app.vault, filePath, blob);
 			await this.insertLink(sourcePath, file.path);
 
 			processingNotice.hide();
