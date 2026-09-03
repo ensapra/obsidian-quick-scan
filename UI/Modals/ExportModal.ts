@@ -3,7 +3,7 @@
  * Provides UI for format selection, filename input, and folder configuration
  */
 
-import { App, Modal, Notice, ButtonComponent, TextComponent, DropdownComponent } from "obsidian";
+import { App, Modal, Notice, ButtonComponent, TextComponent } from "obsidian";
 import type HandWrittenPlugin from "../../main";
 import {
 	generateDefaultFilename,
@@ -19,8 +19,6 @@ import { saveToVault } from "../../Services/VaultExport";
 export class ExportModal extends Modal {
 	private canvas: HTMLCanvasElement;
 	private plugin: HandWrittenPlugin;
-	private exportFolders: string[];
-	private selectedFolder: string;
 	private selectedFormat: ExportFormat;
 	private filenameInput: TextComponent;
 	private extensionDisplay: HTMLElement;
@@ -38,12 +36,7 @@ export class ExportModal extends Modal {
 		super(app);
 		this.canvas = canvas;
 		this.plugin = plugin;
-		this.selectedFormat = plugin.settings.exportDefaultFormat || "png";
-		this.exportFolders =
-			plugin.settings.exportFolders && plugin.settings.exportFolders.length > 0
-				? plugin.settings.exportFolders
-				: ["Scanned"];
-		this.selectedFolder = this.exportFolders[0];
+		this.selectedFormat = plugin.settings.exportDefaultFormat;
 		this.onExportComplete = onExportComplete;
 	}
 
@@ -63,9 +56,6 @@ export class ExportModal extends Modal {
 
 		// Insert link checkbox
 		this.buildInsertLinkCheckbox(contentEl);
-
-		// Folder display
-		this.buildFolderDisplay(contentEl);
 
 		// Action buttons
 		this.buildActionButtons(contentEl);
@@ -201,30 +191,6 @@ export class ExportModal extends Modal {
 		label.textContent = "Insert markdown link into current note";
 	}
 
-	private buildFolderDisplay(container: HTMLElement): void {
-		const section = container.createDiv("export-folder-section");
-
-		const heading = section.createEl("h4");
-		heading.textContent = "Save to destination folder:";
-
-		const dropdownWrapper = section.createDiv("export-folder-dropdown-wrapper");
-		const dropdown = new DropdownComponent(dropdownWrapper);
-		dropdown.selectEl.addClass("export-folder-select");
-
-		for (const folder of this.exportFolders) {
-			const displayLabel = folder.trim() === "" ? "Root folder (/)" : folder;
-			dropdown.addOption(folder, displayLabel);
-		}
-
-		dropdown.setValue(this.selectedFolder);
-		dropdown.onChange((value) => {
-			this.selectedFolder = value;
-		});
-
-		const note = section.createDiv("export-folder-note");
-		note.textContent = "(manage destination folders in plugin settings)";
-	}
-
 	private buildActionButtons(container: HTMLElement): void {
 		const buttonWrapper = container.createDiv("export-buttons");
 
@@ -292,17 +258,22 @@ export class ExportModal extends Modal {
 					);
 				}
 
-				// Save to vault
+				const activeFile = this.app.workspace.getActiveFile();
+				const folder = this.app.fileManager.getNewFileParent(
+					filenameWithExtension,
+					activeFile?.path ?? "",
+				);
+
+				// Save to the folder selected in Obsidian's attachment settings
 				const file = await saveToVault(
 					this.app.vault,
-					this.selectedFolder,
+					folder.path,
 					filenameWithExtension,
 					blob,
 				);
 
 				// Insert markdown link if checkbox is checked
 				if (this.shouldInsertLink) {
-					const activeFile = this.app.workspace.getActiveFile();
 					if (activeFile) {
 						const editor = this.app.workspace.activeEditor?.editor;
 						if (editor) {

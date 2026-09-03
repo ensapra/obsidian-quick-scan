@@ -2,13 +2,11 @@ import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import type { ExportFormat } from "./Services/ImageExport";
 
 interface HandwrittenScannerSettings {
-	exportFolders: string[];
 	exportDefaultFormat: ExportFormat;
 	closeAfterExport: boolean;
 }
 
 const DEFAULT_SETTINGS: HandwrittenScannerSettings = {
-	exportFolders: ["Scanned"],
 	exportDefaultFormat: "png",
 	closeAfterExport: true,
 };
@@ -47,15 +45,10 @@ export default class HandWrittenPlugin extends Plugin {
 
 	async loadSettings() {
 		const savedSettings = await this.loadData() as Partial<HandwrittenScannerSettings> | null;
-		const savedFolders = savedSettings?.exportFolders;
-		const exportFolders = Array.isArray(savedFolders)
-			? savedFolders.filter((folder): folder is string => typeof folder === "string")
-			: [];
 
 		this.settings = {
 			...DEFAULT_SETTINGS,
 			...savedSettings,
-			exportFolders: exportFolders.length > 0 ? exportFolders : DEFAULT_SETTINGS.exportFolders,
 		};
 	}
 
@@ -78,63 +71,6 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName("Destination folders")
-			.setDesc(
-				"Manage destination folders for saving scanned images. In the export dialog, you can choose from these folders using a dropdown menu.",
-			);
-
-		const folders = this.plugin.settings.exportFolders;
-
-		folders.forEach((folderPath, index) => {
-			new Setting(containerEl)
-				.setName(folderPath.trim() === "" ? "Root folder (/)" : folderPath)
-				.addButton((button) => {
-					button
-						.setButtonText("Delete")
-						.setIcon("trash")
-						.setWarning()
-						.setTooltip("Remove this destination folder")
-						.onClick(async () => {
-							if (folders.length <= 1) {
-								new Notice("You must keep at least one destination folder.");
-								return;
-							}
-							folders.splice(index, 1);
-							await this.plugin.saveSettings();
-							this.display();
-						});
-				});
-		});
-
-		let newFolderPath = "";
-		new Setting(containerEl)
-			.setName("Add new destination folder")
-			.setDesc("Enter a folder path (e.g., 'Scanned' or 'Notes/Scans')")
-			.addText((text) => {
-				text
-					.setPlaceholder("Folder path")
-					.setValue(newFolderPath)
-					.onChange((val) => {
-						newFolderPath = val;
-					});
-			})
-			.addButton((button) => {
-				button
-					.setButtonText("Add folder")
-					.setCta()
-					.onClick(async () => {
-						const trimmed = newFolderPath.trim();
-						if (folders.includes(trimmed)) {
-							new Notice("This folder is already in your destination list.");
-							return;
-						}
-						folders.push(trimmed);
-						await this.plugin.saveSettings();
-						this.display();
-					});
-			});
-
-		new Setting(containerEl)
 			.setName("Default export format")
 			.setDesc("Default file format for exporting scanned images")
 			.addDropdown((dropdown) =>
@@ -142,7 +78,7 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 					.addOption("png", "PNG")
 					.addOption("jpg", "JPG")
 					.addOption("svg", "SVG")
-					.setValue(this.plugin.settings.exportDefaultFormat || "png")
+					.setValue(this.plugin.settings.exportDefaultFormat)
 					.onChange(async (value: ExportFormat) => {
 						this.plugin.settings.exportDefaultFormat = value;
 						await this.plugin.saveSettings();
@@ -154,7 +90,7 @@ class HandwrittenScannerSettingTab extends PluginSettingTab {
 			.setDesc("Automatically close the scanner window after successfully exporting an image")
 			.addToggle((toggle) =>
 				toggle
-					.setValue(this.plugin.settings.closeAfterExport ?? true)
+					.setValue(this.plugin.settings.closeAfterExport)
 					.onChange(async (value) => {
 						this.plugin.settings.closeAfterExport = value;
 						await this.plugin.saveSettings();

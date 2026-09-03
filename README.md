@@ -36,7 +36,7 @@ A powerful Obsidian plugin for scanning, processing, and enhancing handwritten n
   - JPG (compact image format)
   - SVG (embedded vector wrapper with customizable stroke color)
 - **Flexible Storage & Workflows**:
-  - **Multi-Destination Folders**: Select from multiple target vault folders via dropdown menu
+   - **Obsidian Attachment Settings**: Save scans using Obsidian's default attachment location
   - **Direct Markdown Link Insertion**: Automatically insert `![[folder/image.png]]` embed link into active note at cursor position
   - **Auto-Close Scanner**: Optionally auto-close scanner window after successful export
   - Automatic timestamp-based filename generation
@@ -136,7 +136,6 @@ BRAT will automatically keep the plugin updated with the latest releases.
 
 Access plugin settings via **Settings → Scan Sketch**:
 
-- **Destination Folders**: Manage multiple target vault folders for saving exported images
 - **Default Export Format**: Set default export file format (PNG, JPG, or SVG)
 - **Close Scanner After Export**: Toggle automatically closing the scanner modal upon successful export
 

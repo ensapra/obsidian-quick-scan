@@ -10,7 +10,7 @@ import { blobToArrayBuffer } from "./ImageExport";
  * Normalize folder path for vault operations
  * Removes leading/trailing slashes and extra whitespace
  * @param path - Raw folder path from user
- * @returns Normalized path (e.g., "Scanned" or "Notes/Scans")
+ * @returns Normalized vault path
  */
 export function normalizeFolderPath(path: string): string {
 	if (!path) {
@@ -33,7 +33,7 @@ export function normalizeFolderPath(path: string): string {
  * Ensure export folder exists, create if needed
  * Handles nested folder paths by creating parent folders recursively
  * @param vault - Obsidian vault instance
- * @param folderPath - Folder path (e.g., "Scanned" or "Notes/Scans")
+ * @param folderPath - Vault folder path
  */
 export async function ensureExportFolder(
 	vault: Vault,
@@ -80,7 +80,7 @@ export function fileExists(vault: Vault, filepath: string): boolean {
 /**
  * Save blob to vault as binary file
  * @param vault - Obsidian vault instance
- * @param folderPath - Destination folder path
+ * @param folderPath - Resolved destination folder path
  * @param filename - Filename with extension
  * @param blob - Blob to save
  * @returns Created TFile
