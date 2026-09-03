@@ -113,8 +113,6 @@ export class ScannerModal extends Modal {
 			this.bgRemovalPanelWrapper,
 			() => this.toggleBackgroundRemovalMode(),
 			(tolerance) => this.canvas.updateBgRemovalTolerance(tolerance),
-			() => this.confirmBackgroundRemoval(),
-			() => this.cancelBackgroundRemoval(),
 			() => this.canvas.isImageLoaded(),
 			() => this.canvas.clearBackgroundSample(),
 		);
@@ -124,7 +122,6 @@ export class ScannerModal extends Modal {
 		this.filterControls = new FilterControls(
 			this.filterPanelWrapper,
 			(config) => this.canvas.updateFilters(config),
-			() => this.canvas.resetFilters(),
 			() => this.canvas.isImageLoaded(),
 			() => this.toggleFilterMode(),
 		);
@@ -305,7 +302,7 @@ export class ScannerModal extends Modal {
 
 	private toggleBackgroundRemovalMode() {
 		if (this.bgRemovalControls.isRemovalModeOpen()) {
-			this.canvas.cancelBackgroundRemoval();
+			this.canvas.applyBackgroundRemoval();
 			this.exitBackgroundRemovalMode();
 			return;
 		}
@@ -324,53 +321,13 @@ export class ScannerModal extends Modal {
 		}
 
 		// Show BG removal panel
-		this.bgRemovalControls.enterRemovalMode();
+		this.bgRemovalControls.enterRemovalMode(
+			this.canvas.getSampledBackgroundColor(),
+			this.canvas.getBgRemovalTolerance(),
+		);
 		this.bgRemovalPanelWrapper.show();
 
 		new Notice(result.message);
-	}
-
-	private async confirmBackgroundRemoval() {
-		try {
-			// Show processing notice
-			this.processingNotice = new Notice("Removing background...", 0);
-
-			// Add a small delay to allow UI to update
-			await new Promise(resolve => window.setTimeout(resolve, 100));
-
-			const result = await this.canvas.applyBackgroundRemoval();
-
-			// Hide processing notice
-			if (this.processingNotice) {
-				this.processingNotice.hide();
-				this.processingNotice = null;
-			}
-
-			if (result.success) {
-				new Notice(result.message);
-				this.exitBackgroundRemovalMode();
-			} else {
-				new Notice(result.message, 5000);
-			}
-		} catch (error) {
-			// Hide processing notice if it's still showing
-			if (this.processingNotice) {
-				this.processingNotice.hide();
-				this.processingNotice = null;
-			}
-
-			console.error("Error in confirmBackgroundRemoval:", error);
-			new Notice(
-				`Background removal failed: ${error.message}\nCheck console for details.`,
-				6000,
-			);
-		}
-	}
-
-	private cancelBackgroundRemoval() {
-		this.canvas.cancelBackgroundRemoval();
-		this.exitBackgroundRemovalMode();
-		new Notice("Background removal cancelled", 2000);
 	}
 
 	private exitBackgroundRemovalMode() {
@@ -381,7 +338,7 @@ export class ScannerModal extends Modal {
 
 	private toggleFilterMode() {
 		if (this.bgRemovalControls.isRemovalModeOpen()) {
-			this.canvas.cancelBackgroundRemoval();
+			this.canvas.applyBackgroundRemoval();
 			this.exitBackgroundRemovalMode();
 		}
 

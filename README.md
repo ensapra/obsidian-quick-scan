@@ -124,7 +124,7 @@ BRAT will automatically keep the plugin updated with the latest releases.
 2. Click on any background area to sample the color
 3. Adjust tolerance slider to fine-tune selection
 4. Preview shows transparent areas with checkerboard pattern
-5. Click "Apply" to confirm or "Cancel" to revert
+5. The preview updates immediately; use "Clear" to restore the original image
 6. Export as PNG to preserve transparency
 
 ### Perspective Crop

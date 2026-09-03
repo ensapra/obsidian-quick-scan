@@ -274,10 +274,12 @@ If your plugin does not need CSS, delete this file.
 }
 
 .filter-value {
+	box-sizing: border-box;
+	width: 42px;
+	padding: 2px 3px;
 	font-size: 12px;
 	font-weight: 600;
 	color: var(--text-accent);
-	min-width: 30px;
 	text-align: right;
 }
 
@@ -350,23 +352,6 @@ If your plugin does not need CSS, delete this file.
 	align-self: flex-start;
 }
 
-.filter-reset-wrapper {
-	grid-column: 1 / -1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding-top: 8px;
-	border-top: 1px solid var(--background-modifier-border);
-	margin-top: 4px;
-}
-
-.filter-reset-wrapper button {
-	padding: 8px 16px;
-	font-size: 13px;
-	border-radius: 6px;
-	white-space: nowrap;
-}
-
 /* Responsive filter panel - Stack to 1 column on mobile */
 @media (max-width: 600px) {
 	.filter-panel-wrapper {
@@ -414,16 +399,6 @@ If your plugin does not need CSS, delete this file.
 		align-self: center;
 	}
 
-	.filter-reset-wrapper {
-		padding-top: 12px;
-		margin-top: 8px;
-	}
-
-	.filter-reset-wrapper button {
-		width: 100%;
-		padding: 10px 18px;
-		font-size: 14px;
-	}
 }
 
 /* Background Removal Panel - Similar to filter panel */
@@ -551,21 +526,6 @@ If your plugin does not need CSS, delete this file.
 	font-weight: 500;
 }
 
-.bg-removal-actions {
-	display: flex;
-	gap: 12px;
-	margin-top: 4px;
-	width: 100%;
-}
-
-.bg-removal-actions button {
-	flex: 1;
-	padding: 10px 20px;
-	font-size: 13px;
-	border-radius: 6px;
-	font-weight: 500;
-}
-
 /* Mobile responsive */
 @media (max-width: 600px) {
 	.bg-removal-panel-wrapper > div {
@@ -609,12 +569,4 @@ If your plugin does not need CSS, delete this file.
 		font-size: 11px;
 	}
 
-	.bg-removal-actions {
-		gap: 10px;
-	}
-
-	.bg-removal-actions button {
-		padding: 12px 18px;
-		font-size: 14px;
-	}
 }

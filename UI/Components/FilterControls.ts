@@ -10,7 +10,6 @@ export class FilterControls {
 	private gridContainer: HTMLElement;
 	private isExpanded: boolean;
 	private onFilterChange: (config: Partial<ImageFilterConfig>) => void;
-	private onResetFilters: () => void;
 	private checkImageLoaded: () => boolean;
 	private onToggleMode: () => void;
 
@@ -31,14 +30,12 @@ export class FilterControls {
 	constructor(
 		panelContainer: HTMLElement,
 		onFilterChange: (config: Partial<ImageFilterConfig>) => void,
-		onResetFilters: () => void,
 		checkImageLoaded: () => boolean,
 		onToggleMode: () => void,
 	) {
 		this.panelContainer = panelContainer;
 		this.gridContainer = this.panelContainer.createDiv();
 		this.onFilterChange = onFilterChange;
-		this.onResetFilters = onResetFilters;
 		this.checkImageLoaded = checkImageLoaded;
 		this.onToggleMode = onToggleMode;
 		this.isExpanded = false;
@@ -111,9 +108,6 @@ export class FilterControls {
 		this.createSaturationControl();
 		this.createBlackAndWhiteToggle();
 		this.createInvertToggle();
-
-		// Create reset button
-		this.createResetButton();
 	}
 
 	/**
@@ -126,7 +120,11 @@ export class FilterControls {
 		
 		const label = wrapper.createDiv("filter-label");
 		label.createSpan({ text: "Brightness" });
-		const valueDisplay = label.createSpan({ text: "0", cls: "filter-value" });
+		const valueInput = label.createEl("input", {
+			type: "number",
+			cls: "filter-value",
+			attr: { min: "-100", max: "100", step: "1", value: "0" },
+		});
 
 		this.brightnessSlider = wrapper.createEl("input", {
 			type: "range",
@@ -139,10 +137,8 @@ export class FilterControls {
 			},
 		});
 
-		this.brightnessSlider.addEventListener("input", (e) => {
-			const value = parseInt((e.target as HTMLInputElement).value);
+		this.wireNumericControl(this.brightnessSlider, valueInput, (value) => {
 			this.brightness = value;
-			valueDisplay.setText(value.toString());
 			this.onFilterChange({ brightness: value });
 		});
 	}
@@ -157,7 +153,11 @@ export class FilterControls {
 		
 		const label = wrapper.createDiv("filter-label");
 		label.createSpan({ text: "Contrast" });
-		const valueDisplay = label.createSpan({ text: "0", cls: "filter-value" });
+		const valueInput = label.createEl("input", {
+			type: "number",
+			cls: "filter-value",
+			attr: { min: "-100", max: "100", step: "1", value: "0" },
+		});
 
 		this.contrastSlider = wrapper.createEl("input", {
 			type: "range",
@@ -170,10 +170,8 @@ export class FilterControls {
 			},
 		});
 
-		this.contrastSlider.addEventListener("input", (e) => {
-			const value = parseInt((e.target as HTMLInputElement).value);
+		this.wireNumericControl(this.contrastSlider, valueInput, (value) => {
 			this.contrast = value;
-			valueDisplay.setText(value.toString());
 			this.onFilterChange({ contrast: value });
 		});
 	}
@@ -188,7 +186,11 @@ export class FilterControls {
 		
 		const label = wrapper.createDiv("filter-label");
 		label.createSpan({ text: "Saturation" });
-		const valueDisplay = label.createSpan({ text: "0", cls: "filter-value" });
+		const valueInput = label.createEl("input", {
+			type: "number",
+			cls: "filter-value",
+			attr: { min: "-100", max: "100", step: "1", value: "0" },
+		});
 
 		this.saturationSlider = wrapper.createEl("input", {
 			type: "range",
@@ -201,10 +203,8 @@ export class FilterControls {
 			},
 		});
 
-		this.saturationSlider.addEventListener("input", (e) => {
-			const value = parseInt((e.target as HTMLInputElement).value);
+		this.wireNumericControl(this.saturationSlider, valueInput, (value) => {
 			this.saturation = value;
-			valueDisplay.setText(value.toString());
 			this.onFilterChange({ saturation: value });
 		});
 	}
@@ -259,59 +259,31 @@ export class FilterControls {
 		});
 	}
 
-	/**
-	 * Create reset button
-	 */
-	private createResetButton() {
-		if (!this.gridContainer) return;
+	private wireNumericControl(
+		slider: HTMLInputElement,
+		valueInput: HTMLInputElement,
+		onChange: (value: number) => void,
+	) {
+		const updateValue = (rawValue: string) => {
+			const parsedValue = Number(rawValue);
+			if (!Number.isFinite(parsedValue)) return;
 
-		const btnWrapper = this.gridContainer.createDiv("filter-reset-wrapper");
-		
-		new ButtonComponent(btnWrapper)
-			.setButtonText("Reset filters")
-			.setTooltip("Reset all filters to default")
-			.onClick(() => {
-				this.resetAllControls();
-				this.onResetFilters();
-			});
-	}
+			const min = Number(slider.min);
+			const max = Number(slider.max);
+			const value = Math.max(min, Math.min(max, Math.round(parsedValue)));
+			slider.value = value.toString();
+			valueInput.value = value.toString();
+			onChange(value);
+		};
 
-	/**
-	 * Reset all control values to default
-	 */
-	private resetAllControls() {
-		this.brightness = 0;
-		this.contrast = 0;
-		this.saturation = 0;
-		this.blackAndWhite = false;
-		this.invert = false;
-
-		if (this.brightnessSlider) {
-			this.brightnessSlider.value = "0";
-			const valueDisplay = this.brightnessSlider.parentElement?.querySelector(".filter-value");
-			if (valueDisplay) valueDisplay.setText("0");
-		}
-
-		if (this.contrastSlider) {
-			this.contrastSlider.value = "0";
-			const valueDisplay = this.contrastSlider.parentElement?.querySelector(".filter-value");
-			if (valueDisplay) valueDisplay.setText("0");
-		}
-
-		if (this.saturationSlider) {
-			this.saturationSlider.value = "0";
-			this.saturationSlider.disabled = false;
-			const valueDisplay = this.saturationSlider.parentElement?.querySelector(".filter-value");
-			if (valueDisplay) valueDisplay.setText("0");
-		}
-
-		if (this.bwToggle) {
-			this.bwToggle.checked = false;
-		}
-
-		if (this.invertToggle) {
-			this.invertToggle.checked = false;
-		}
+		slider.addEventListener("input", () => updateValue(slider.value));
+		slider.addEventListener("dblclick", () => updateValue("0"));
+		valueInput.addEventListener("input", () => updateValue(valueInput.value));
+		valueInput.addEventListener("blur", () => {
+			if (!Number.isFinite(Number(valueInput.value))) {
+				valueInput.value = slider.value;
+			}
+		});
 	}
 
 	/**

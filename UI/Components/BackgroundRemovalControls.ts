@@ -14,8 +14,6 @@ export class BackgroundRemovalControls {
 
 	// Callbacks
 	private onToleranceChange: (tolerance: number) => void;
-	private onApply: () => void | Promise<void>;
-	private onCancel: () => void;
 	private checkImageLoaded: () => boolean;
 	private onClearSample: () => void;
 
@@ -29,13 +27,12 @@ export class BackgroundRemovalControls {
 	private colorSwatch: HTMLElement | null;
 	private colorText: HTMLElement | null;
 	private instructionText: HTMLElement | null;
+	private toleranceValueDisplay: HTMLElement | null;
 
 	constructor(
 		panelContainer: HTMLElement,
 		onToggleMode: () => void,
 		onToleranceChange: (tolerance: number) => void,
-		onApply: () => void | Promise<void>,
-		onCancel: () => void,
 		checkImageLoaded: () => boolean,
 		onClearSample: () => void,
 	) {
@@ -43,8 +40,6 @@ export class BackgroundRemovalControls {
 		this.gridContainer = this.panelContainer.createDiv();
 		this.onToggleMode = onToggleMode;
 		this.onToleranceChange = onToleranceChange;
-		this.onApply = onApply;
-		this.onCancel = onCancel;
 		this.checkImageLoaded = checkImageLoaded;
 		this.onClearSample = onClearSample;
 		this.isExpanded = false;
@@ -59,6 +54,7 @@ export class BackgroundRemovalControls {
 		this.colorSwatch = null;
 		this.colorText = null;
 		this.instructionText = null;
+		this.toleranceValueDisplay = null;
 
 		// Build the panel immediately
 		this.buildPanel();
@@ -88,10 +84,17 @@ export class BackgroundRemovalControls {
 	/**
 	 * Enter background removal mode
 	 */
-	public enterRemovalMode() {
+	public enterRemovalMode(sampledColor: RGB | null = null, tolerance = 15) {
 		this.isExpanded = true;
 		this.panelContainer.show();
-		this.resetState();
+		this.tolerance = tolerance;
+		if (this.toleranceSlider) {
+			this.toleranceSlider.value = tolerance.toString();
+		}
+		if (this.toleranceValueDisplay) {
+			this.toleranceValueDisplay.setText(tolerance.toString());
+		}
+		this.updateColorDisplay(sampledColor);
 	}
 
 	/**
@@ -100,25 +103,10 @@ export class BackgroundRemovalControls {
 	public exitRemovalMode() {
 		this.isExpanded = false;
 		this.panelContainer.hide();
-		this.resetState();
 	}
 
 	public isRemovalModeOpen(): boolean {
 		return this.isExpanded;
-	}
-
-	/**
-	 * Reset state when entering/exiting mode
-	 */
-	private resetState() {
-		this.sampledColor = null;
-		this.tolerance = 15;
-
-		// Reset UI
-		if (this.toleranceSlider) {
-			this.toleranceSlider.value = "15";
-		}
-		this.updateColorDisplay(null);
 	}
 
 	/**
@@ -152,8 +140,6 @@ export class BackgroundRemovalControls {
 		// Create color display
 		this.createColorDisplay();
 
-		// Create action buttons
-		this.createActionButtons();
 	}
 
 	/**
@@ -190,6 +176,7 @@ export class BackgroundRemovalControls {
 			text: "15",
 			cls: "bg-removal-tolerance-value",
 		});
+		this.toleranceValueDisplay = valueDisplay;
 
 		this.toleranceSlider.addEventListener("input", (e) => {
 			const value = parseInt((e.target as HTMLInputElement).value);
@@ -247,29 +234,6 @@ export class BackgroundRemovalControls {
 		this.colorSwatch.setCssProps({ backgroundColor: "transparent" });
 		this.colorText.setText("None");
 	}
-	}
-
-	/**
-	 * Create action buttons (Apply/Cancel)
-	 */
-	private createActionButtons() {
-		const wrapper = this.gridContainer.createDiv("bg-removal-control");
-		const actionsWrapper = wrapper.createDiv("bg-removal-actions");
-
-		new ButtonComponent(actionsWrapper)
-			.setButtonText("Apply")
-			.setTooltip("Apply background removal")
-			.setCta()
-			.onClick(() => {
-				void this.onApply();
-			});
-
-		new ButtonComponent(actionsWrapper)
-			.setButtonText("Cancel")
-			.setTooltip("Cancel background removal")
-			.onClick(() => {
-				this.onCancel();
-			});
 	}
 
 	/**

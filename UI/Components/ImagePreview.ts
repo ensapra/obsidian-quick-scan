@@ -68,7 +68,6 @@ export class ImagePreview extends Component {
 	private backgroundRemovalMode: boolean;
 	private sampledBackgroundColor: RGB | null;
 	private bgRemovalTolerance: number;
-	private originalImageDataBeforeRemoval: ImageData | null;
 	private onColorSampled: ((color: RGB) => void) | null;
 	private readonly backgroundSampleHandler = (event: MouseEvent) =>
 		this.onBackgroundSampleClick(event);
@@ -135,7 +134,6 @@ export class ImagePreview extends Component {
 		this.backgroundRemovalMode = false;
 		this.sampledBackgroundColor = null;
 		this.bgRemovalTolerance = 15;
-		this.originalImageDataBeforeRemoval = null;
 		this.onColorSampled = null;
 
 		// Setup input event handlers (mouse and touch)
@@ -391,6 +389,8 @@ export class ImagePreview extends Component {
 		this.img.onload = () => {
 			// Reset filters when loading new image (as per user preference Option A)
 			this.filterConfig = { ...DEFAULT_FILTER_CONFIG };
+			this.sampledBackgroundColor = null;
+			this.bgRemovalTolerance = 15;
 			
 			// Small delay for mobile to ensure DOM is ready
 			window.setTimeout(() => {
@@ -441,8 +441,20 @@ export class ImagePreview extends Component {
 			this.toRotateDegree,
 		);
 
-		// Apply filters if any are active
-		this.applyCurrentFilters();
+			const actualWidth = Math.floor(cssWidth * (window.devicePixelRatio || 1));
+			const actualHeight = Math.floor(cssHeight * (window.devicePixelRatio || 1));
+			let imageData = this.ctx.getImageData(0, 0, actualWidth, actualHeight);
+
+			if (this.sampledBackgroundColor) {
+				imageData = removeBackground(
+					imageData,
+					this.sampledBackgroundColor,
+					this.bgRemovalTolerance,
+				);
+			}
+
+			applyFilters(imageData, this.filterConfig);
+			this.ctx.putImageData(imageData, 0, 0);
 	}
 
 	public rotate(degree: number): OperationResult {
@@ -678,35 +690,6 @@ export class ImagePreview extends Component {
 	 * Apply current filter configuration to the displayed image
 	 * Uses debouncing for performance (200ms delay)
 	 */
-	private applyCurrentFilters() {
-		// Check if any filters are active
-		const hasFilters = this.filterConfig.brightness !== 0 
-			|| this.filterConfig.contrast !== 0 
-			|| this.filterConfig.saturation !== 0 
-			|| this.filterConfig.blackAndWhite
-			|| this.filterConfig.invert;
-
-		if (!hasFilters) {
-			return; // No filters to apply
-		}
-
-		// Get current canvas dimensions
-		const cssWidth = parseInt(this.canvas.style.width);
-		const cssHeight = parseInt(this.canvas.style.height);
-		const dpr = window.devicePixelRatio || 1;
-		const actualWidth = Math.floor(cssWidth * dpr);
-		const actualHeight = Math.floor(cssHeight * dpr);
-
-		// Get image data from canvas
-		const imageData = this.ctx.getImageData(0, 0, actualWidth, actualHeight);
-
-		// Apply filters
-		applyFilters(imageData, this.filterConfig);
-
-		// Put filtered image back on canvas
-		this.ctx.putImageData(imageData, 0, 0);
-	}
-
 	/**
 	 * Update filter configuration and redraw with debouncing
 	 * @param config - New filter configuration
@@ -773,10 +756,7 @@ export class ImagePreview extends Component {
 			return { success: false, message: "Please upload photo first!" };
 		}
 
-		// Save current state for cancellation
-		this.originalImageDataBeforeRemoval = this.getCurrentImageData();
-	this.backgroundRemovalMode = true;
-	this.sampledBackgroundColor = null;
+		this.backgroundRemovalMode = true;
 	this.onColorSampled = onColorSampled || null;
 
 	// Change cursor to crosshair
@@ -817,7 +797,7 @@ public exitBackgroundRemovalMode(): void {
 	 * @param y - Y coordinate in CSS pixels
 	 */
 	public sampleBackgroundAtPoint(x: number, y: number): RGB | null {
-		const imageData = this.getCurrentImageData();
+		const imageData = this.getCurrentImageData(false);
 		
 		// Convert CSS pixels to image pixels (account for DPR)
 		const dpr = window.devicePixelRatio || 1;
@@ -834,8 +814,7 @@ public exitBackgroundRemovalMode(): void {
 				this.onColorSampled(color);
 			}
 
-			// Trigger preview if enabled
-			this.previewBackgroundRemoval();
+			this.redrawImage();
 		}
 
 		return color;
@@ -848,116 +827,36 @@ public exitBackgroundRemovalMode(): void {
 		this.bgRemovalTolerance = tolerance;
 
 		if (this.sampledBackgroundColor) {
-			this.previewBackgroundRemoval();
+			this.redrawImage();
 		}
 	}
 
 	public clearBackgroundSample(): void {
 		this.sampledBackgroundColor = null;
-		this.restoreOriginalBeforeRemoval();
+		this.redrawImage();
 	}
 
 	/**
-	 * Preview background removal
+	 * Keep the sampled removal when leaving background removal mode.
 	 */
-	private previewBackgroundRemoval(): void {
-		if (!this.sampledBackgroundColor || !this.originalImageDataBeforeRemoval) {
-			return;
-		}
-
-		const cssWidth = parseInt(this.canvas.style.width);
-		const cssHeight = parseInt(this.canvas.style.height);
-
-		// Draw checkerboard pattern first for transparency visibility
-		fillCanvasWithCheckerboard(this.ctx, cssWidth, cssHeight);
-
-		const preview = removeBackground(
-			this.originalImageDataBeforeRemoval,
-			this.sampledBackgroundColor,
-			this.bgRemovalTolerance,
-		);
-
-		this.ctx.putImageData(preview, 0, 0);
-	}
-
-	/**
-	 * Apply background removal permanently
-	 */
-	public async applyBackgroundRemoval(): Promise<OperationResult> {
-		if (!this.sampledBackgroundColor) {
-			return {
-				success: false,
-				message: "Please sample a background color first",
-			};
-		}
-
-		if (!this.originalImageDataBeforeRemoval) {
-			return {
-				success: false,
-				message: "No image data available",
-			};
-		}
-
-		try {
-			const result = removeBackground(
-				this.originalImageDataBeforeRemoval,
-				this.sampledBackgroundColor,
-				this.bgRemovalTolerance,
-			);
-
-			// Convert ImageData back to Image for future operations
-			// No need to pass dimensions - function will use ImageData's actual dimensions
-			this.img = await createImageFromImageData(result);
-
-			// Redraw with new image
-			this.redrawImage();
-
-			// Cleanup
-			this.originalImageDataBeforeRemoval = null;
-			this.exitBackgroundRemovalMode();
-
-			return {
-				success: true,
-				message: "Background removed successfully",
-			};
-		} catch (error) {
-			return {
-				success: false,
-				message: `Failed to remove background: ${error.message}`,
-			};
-		}
+	public applyBackgroundRemoval(): void {
+		this.exitBackgroundRemovalMode();
 	}
 
 	/**
 	 * Cancel background removal
 	 */
-	public cancelBackgroundRemoval(): void {
-		this.restoreOriginalBeforeRemoval();
-		this.originalImageDataBeforeRemoval = null;
+	public restoreBeforeBackgroundRemoval(): void {
 		this.sampledBackgroundColor = null;
+		this.redrawImage();
 		this.exitBackgroundRemovalMode();
-	}
-
-	/**
-	 * Restore original image before removal
-	 */
-	private restoreOriginalBeforeRemoval(): void {
-		if (this.originalImageDataBeforeRemoval) {
-			const cssWidth = parseInt(this.canvas.style.width);
-			const cssHeight = parseInt(this.canvas.style.height);
-			
-			// Draw checkerboard pattern first for transparency visibility
-			fillCanvasWithCheckerboard(this.ctx, cssWidth, cssHeight);
-			
-			this.ctx.putImageData(this.originalImageDataBeforeRemoval, 0, 0);
-		}
 	}
 
 	/**
 	 * Get current image data from canvas (clean, without checkerboard)
 	 * Creates a temporary canvas with only the image content for processing
 	 */
-	private getCurrentImageData(): ImageData {
+	private getCurrentImageData(includeFilters = true): ImageData {
 		const cssWidth = parseInt(this.canvas.style.width);
 		const cssHeight = parseInt(this.canvas.style.height);
 		const dpr = window.devicePixelRatio || 1;
@@ -995,7 +894,7 @@ public exitBackgroundRemovalMode(): void {
 				|| this.filterConfig.blackAndWhite
 				|| this.filterConfig.invert;
 
-			if (hasFilters) {
+			if (includeFilters && hasFilters) {
 				const imageData = tempCtx.getImageData(0, 0, actualWidth, actualHeight);
 				applyFilters(imageData, this.filterConfig);
 				tempCtx.putImageData(imageData, 0, 0);
@@ -1011,6 +910,10 @@ public exitBackgroundRemovalMode(): void {
 	 */
 	public getSampledBackgroundColor(): RGB | null {
 		return this.sampledBackgroundColor;
+	}
+
+	public getBgRemovalTolerance(): number {
+		return this.bgRemovalTolerance;
 	}
 
 	/**
@@ -1054,20 +957,20 @@ public exitBackgroundRemovalMode(): void {
 				this.toRotateDegree,
 			);
 
-			// Apply filters if any are active
-			const hasFilters = this.filterConfig.brightness !== 0 
-				|| this.filterConfig.contrast !== 0 
-				|| this.filterConfig.saturation !== 0 
-				|| this.filterConfig.blackAndWhite
-				|| this.filterConfig.invert;
+			const actualWidth = Math.floor(cssWidth * dpr);
+			const actualHeight = Math.floor(cssHeight * dpr);
+			const imageData = exportCtx.getImageData(0, 0, actualWidth, actualHeight);
 
-			if (hasFilters) {
-				const actualWidth = Math.floor(cssWidth * dpr);
-				const actualHeight = Math.floor(cssHeight * dpr);
-				const imageData = exportCtx.getImageData(0, 0, actualWidth, actualHeight);
-				applyFilters(imageData, this.filterConfig);
-				exportCtx.putImageData(imageData, 0, 0);
-			}
+			const processedImageData = this.sampledBackgroundColor
+				? removeBackground(
+						imageData,
+						this.sampledBackgroundColor,
+						this.bgRemovalTolerance,
+					)
+				: imageData;
+
+			applyFilters(processedImageData, this.filterConfig);
+			exportCtx.putImageData(processedImageData, 0, 0);
 		}
 
 		return exportCanvas;

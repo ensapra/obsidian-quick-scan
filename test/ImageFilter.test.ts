@@ -324,6 +324,25 @@ describe("ImageFilter", () => {
 			]);
 		});
 
+		it("should preserve fully transparent pixels", () => {
+			const imageData = new ImageData(4, 1);
+			imageData.data.set([
+				0, 0, 0, 255,
+				255, 255, 255, 255,
+				123, 45, 67, 0,
+				10, 20, 30, 128,
+			]);
+
+			applyFilters(imageData, { ...DEFAULT_FILTER_CONFIG, invert: true });
+
+			expect(Array.from(imageData.data)).toEqual([
+				255, 255, 255, 255,
+				0, 0, 0, 255,
+				123, 45, 67, 0,
+				245, 235, 225, 128,
+			]);
+		});
+
 		it("should apply black and white conversion", () => {
 			const imageData = cloneImageData(testImageData);
 			const config: ImageFilterConfig = {
