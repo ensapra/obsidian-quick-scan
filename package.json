@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-scan-sketch",
-	"version": "2.0.0",
+	"version": "0.0.1",
 	"description": "Scan, process, and enhance handwritten notes with perspective correction, background removal, and advanced filtering for Obsidian.",
 	"main": "main.js",
 	"scripts": {
@@ -24,7 +24,7 @@
 		"note-taking",
 		"sketch"
 	],
-	"author": "Show Wai Yan",
+	"author": "Ensapra",
 	"license": "OBSD",
 	"devDependencies": {
 		"@types/node": "^20.19.27",

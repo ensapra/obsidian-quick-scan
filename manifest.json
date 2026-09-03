@@ -1,11 +1,10 @@
 {
-	"id": "scan-sketch",
-	"name": "Scan Sketch",
-	"version": "2.0.0",
+	"id": "quick-scan",
+	"name": "Quick Scan",
+	"version": "0.0.1",
 	"minAppVersion": "1.8.10",
 	"description": "Scan, process, and enhance handwritten notes with perspective correction, background removal, and advanced filtering.",
-	"author": "Show Wai Yan",
-	"authorUrl": "https://github.com/Showwaiyan",
-	"fundingUrl": "https://buymeacoffee.com/showwaiyan",
+	"author": "Ensapra",
+	"authorUrl": "https://github.com/ensapra",
 	"isDesktopOnly": false
 }
