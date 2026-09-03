@@ -1,8 +1,13 @@
-export function uploadImageToCanvas(drawImageOnCanvas: (file: File) => void) {
+export function uploadImageToCanvas(
+	drawImageOnCanvas: (file: File) => void,
+	openCamera = true,
+) {
 	const input = createEl("input");
 	input.type = "file";
 	input.accept = "image/*";
-	input.setAttribute("capture", "environment");
+	if (openCamera) {
+		input.setAttribute("capture", "environment");
+	}
 
 	input.onchange = (e: Event) => {
 		const target = e.target as HTMLInputElement;

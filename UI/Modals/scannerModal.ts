@@ -75,9 +75,9 @@ export class ScannerModal extends Modal {
 		//btn setup
 		this.btnPhotoUpload = new ButtonComponent(this.buttonWrapper)
 			.setIcon("image")
-			.setTooltip("Choose image from camera or gallery")
+			.setTooltip("Choose image from gallery")
 			.setCta()
-			.onClick(() => this.openImagePicker());
+			.onClick(() => this.openImagePicker(false));
 
 		this.btnPhotoRotateCW = new ButtonComponent(this.buttonWrapper)
 			.setIcon("rotate-cw")
@@ -155,11 +155,11 @@ export class ScannerModal extends Modal {
 		this.openImagePicker();
 	}
 
-	private openImagePicker(): void {
+	private openImagePicker(openCamera = true): void {
 		uploadImageToCanvas((file) => {
 			this.canvas.darawImage(file);
 			this.setImageControlsEnabled(true);
-		});
+		}, openCamera);
 	}
 
 	private setImageControlsEnabled(enabled: boolean): void {
